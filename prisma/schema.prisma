@@ -12,7 +12,7 @@ model User {
     email     String   @unique
     password  String
     createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @map("updated_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
     token     Token[]
 
     @@map("users")
