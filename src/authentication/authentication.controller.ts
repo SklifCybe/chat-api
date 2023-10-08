@@ -1,6 +1,15 @@
-import type { User } from '@prisma/client';
 import { Response } from 'express';
-import { Controller, Post, Get, Body, BadRequestException, UnauthorizedException, Res } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Get,
+    Body,
+    BadRequestException,
+    UnauthorizedException,
+    Res,
+    UseInterceptors,
+    ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
@@ -10,6 +19,8 @@ import { REFRESH_TOKEN } from '../common/constants/token.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { UserAgent } from '../common/decorators/user-agent.decorator';
+import { Public } from '../common/decorators/public.decorator';
+import { UserResponse } from '../common/response/user.response';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -18,15 +29,18 @@ export class AuthenticationController {
         private readonly applicationConfigService: ApplicationConfigService,
     ) {}
 
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Public()
     @Post('sign-up')
-    public async signUp(@Body() signUpDto: SignUpDto): Promise<User> {
+    public async signUp(@Body() signUpDto: SignUpDto): Promise<UserResponse> {
         const user = await this.authenticationService.signUp(signUpDto);
         if (!user) {
             throw new BadRequestException(unableToRegisterUserError(JSON.stringify(signUpDto)));
         }
-        return user;
+        return new UserResponse(user);
     }
 
+    @Public()
     @Post('sign-in')
     public async signIn(
         @Body() signInDto: SignInDto,

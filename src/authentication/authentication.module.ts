@@ -8,6 +8,7 @@ import { AuthenticationProviderModule } from '../providers/authentication/provid
 import { AuthenticationRepository } from './authentication.repository';
 import { AuthenticationConfigService } from '../config/authentication/config.service';
 import { ApplicationConfigService } from '../config/application/config.service';
+import { STRATEGIES } from './strategies';
 
 @Module({
     imports: [PassportModule, UserModule, AuthenticationProviderModule],
@@ -18,6 +19,7 @@ import { ApplicationConfigService } from '../config/application/config.service';
         JwtService,
         AuthenticationConfigService,
         ApplicationConfigService,
+        ...STRATEGIES,
     ],
 })
 export class AuthenticationModule {}
