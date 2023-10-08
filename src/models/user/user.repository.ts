@@ -12,12 +12,12 @@ export class UserRepository {
         });
     }
 
-    public async findOneById(id: User['id']): Promise<User | undefined> {
+    public async findOne(idOrEmail: string): Promise<User | null> {
         // todo: check user.findFirst throw or not exception
-        return this.prismaService.user.findFirst({ where: { id } });
+        return this.prismaService.user.findFirst({ where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] } });
     }
 
-    public async remove(id: User['id']): Promise<User> {
+    public async remove(id: string): Promise<User> {
         // todo: check user.delete throw or not exception
         return this.prismaService.user.delete({ where: { id } });
     }

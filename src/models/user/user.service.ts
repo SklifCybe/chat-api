@@ -15,11 +15,15 @@ export class UserService {
         return this.userRepository.create(email, hashedPassword);
     }
 
-    public async findOneById(id: User['id']): Promise<User> {
-        return this.userRepository.findOneById(id);
+    public async findOneById(id: string): Promise<User | null> {
+        return this.userRepository.findOne(id);
     }
 
-    public async remove(id: User['id']): Promise<User> {
+    public async findOneByEmail(email: string): Promise<User | null> {
+        return this.userRepository.findOne(email);
+    }
+
+    public async remove(id: string): Promise<User> {
         return this.userRepository.remove(id);
     }
 
