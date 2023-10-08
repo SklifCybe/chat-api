@@ -8,7 +8,6 @@ import { JWT, IS_PUBLIC_KEY } from '../constants/jwt.constant';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard(JWT) implements CanActivate {
     constructor(private readonly reflector: Reflector) {
-        console.log('sdf')
         super();
     }
 
