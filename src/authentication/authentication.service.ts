@@ -52,6 +52,10 @@ export class AuthenticationService {
         }
     }
 
+    public async signOut(refreshToken: string): Promise<Token> {
+        return this.authenticationRepository.removeRefreshToken(refreshToken);
+    }
+
     public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens> {
         const token = await this.authenticationRepository.getRefreshToken({ token: refreshToken });
 

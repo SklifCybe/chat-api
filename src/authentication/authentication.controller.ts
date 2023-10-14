@@ -9,6 +9,8 @@ import {
     Res,
     UseInterceptors,
     ClassSerializerInterceptor,
+    HttpStatus,
+    Delete,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -70,6 +72,20 @@ export class AuthenticationController {
         this.setRefreshTokenToCookies(tokens, response);
 
         return tokens;
+    }
+
+    @Delete('sign-out')
+    public async signOut(
+        @Cookie(REFRESH_TOKEN) refreshToken: string,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<HttpStatus> {
+        if (!refreshToken) {
+            throw new UnauthorizedException();
+        }
+        await this.authenticationService.signOut(refreshToken);
+        response.clearCookie(REFRESH_TOKEN);
+
+        return HttpStatus.NO_CONTENT;
     }
 
     private setRefreshTokenToCookies(tokens: Tokens, response: Response): void {
