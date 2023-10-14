@@ -35,7 +35,13 @@ export class UserRepository {
     }
 
     public async remove(id: string): Promise<User> {
+        await this.cacheManager.del(id);
+
         // todo: check user.delete throw or not exception
-        return this.prismaService.user.delete({ where: { id } });
+        const user = await this.prismaService.user.delete({ where: { id } });
+
+        await Promise.allSettled([this.cacheManager.del(user.id), this.cacheManager.del(user.email)]);
+
+        return user;
     }
 }
