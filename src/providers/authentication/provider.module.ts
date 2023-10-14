@@ -8,7 +8,7 @@ import { AuthenticationConfigService } from '../../config/authentication/config.
         JwtModule.registerAsync({
             imports: [AuthenticationConfigModule],
             inject: [AuthenticationConfigService],
-            useFactory: (authenticationConfigService: AuthenticationConfigService) => ({
+            useFactory: async (authenticationConfigService: AuthenticationConfigService) => ({
                 secret: authenticationConfigService.secret,
                 signOptions: authenticationConfigService.signOptions,
             }),
