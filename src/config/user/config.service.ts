@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JWT_EXPIRE } from '../../common/constants/env-variables.constant';
-import { convertToSeconds } from '../../common/utils/convert-to-seconds.util';
+import { convertToSeconds } from '../../common/utils/convert-to-seconds';
 
 // todo: delete and transfer to redis
 @Injectable()

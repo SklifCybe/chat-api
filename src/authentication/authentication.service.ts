@@ -15,7 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
 import { AuthenticationConfigService } from '../config/authentication/config.service';
 import { MailService } from '../models/mail/mail.service';
-import { createConfirmCode } from '../common/utils/create-confirm-code.util';
+import { createConfirmCode } from '../common/utils/create-confirm-code';
 import type { ConfirmDto } from './dto/confirm.dto';
 import { CacheInformationService } from '../models/cache-information/cache-information.service';
 import type { NewCodeDto } from './dto/new-code.dto';
