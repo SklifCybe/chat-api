@@ -1,14 +1,24 @@
 import { compare } from 'bcrypt';
 import type { Token, User } from '@prisma/client';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../models/user/user.service';
 import type { SignUpDto } from './dto/sign-up.dto';
 import type { SignInDto } from './dto/sign-in.dto';
 import type { Tokens } from '../common/interfaces/tokens.interface';
-import { USER_HAS_BEEN_DELETED, WRONG_EMAIL_OR_PASSWORD } from '../common/constants/error-messages.constant';
+import {
+    INCORRECT_VERIFICATION_CODE,
+    USER_HAS_BEEN_DELETED,
+    WRONG_EMAIL_OR_PASSWORD,
+    CODE_EXPIRED,
+} from '../common/constants/error-messages.constant';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
 import { AuthenticationConfigService } from '../config/authentication/config.service';
+import { MailService } from '../models/mail/mail.service';
+import { createConfirmCode } from '../common/utils/create-confirm-code.util';
+import type { ConfirmDto } from './dto/confirm.dto';
+import { CacheInformationService } from '../models/cache-information/cache-information.service';
+import type { NewCodeDto } from './dto/new-code.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -18,10 +28,16 @@ export class AuthenticationService {
         private readonly jwtService: JwtService,
         private readonly authenticationRepository: AuthenticationRepository,
         private readonly authenticationConfigService: AuthenticationConfigService,
+        private readonly mailService: MailService,
+        private readonly cacheInformationService: CacheInformationService,
     ) {}
 
     public async signUp(signUpDto: SignUpDto): Promise<User | null> {
         try {
+            const { firstName, lastName, email } = signUpDto;
+
+            await this.sendCodeToEmail(firstName, lastName, email);
+
             return this.userService.create(signUpDto);
         } catch (error) {
             this.logger.error(error);
@@ -43,9 +59,7 @@ export class AuthenticationService {
                 throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
             }
 
-            const tokens = await this.generateTokens(user.id, user.email, userAgent);
-
-            return tokens;
+            return this.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
             return null;
@@ -54,6 +68,45 @@ export class AuthenticationService {
 
     public async signOut(refreshToken: string): Promise<Token> {
         return this.authenticationRepository.removeRefreshToken(refreshToken);
+    }
+
+    public async confirm(confirmDto: ConfirmDto, userAgent: string): Promise<Tokens | null> {
+        try {
+            const codeFromCache = await this.cacheInformationService.getCodeConfirm(confirmDto.email);
+
+            if (!codeFromCache) {
+                throw new BadRequestException(CODE_EXPIRED);
+            }
+
+            if (confirmDto.code !== codeFromCache) {
+                throw new UnauthorizedException(INCORRECT_VERIFICATION_CODE);
+            }
+
+            const user = await this.userService.findOneByEmail(confirmDto.email);
+
+            if (!user) {
+                throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+            }
+
+            await this.userService.confirm(user.id);
+
+            return this.generateTokens(user.id, user.email, userAgent);
+        } catch (error) {
+            this.logger.error(error);
+            return null;
+        }
+    }
+
+    public async newCode(newCodeDto: NewCodeDto): Promise<void> {
+        const { email, firstName, lastName } = newCodeDto;
+
+        const user = await this.userService.findOneByEmail(newCodeDto.email);
+
+        if (!user) {
+            throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+        }
+
+        await this.sendCodeToEmail(firstName, lastName, email);
     }
 
     public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens> {
@@ -83,7 +136,11 @@ export class AuthenticationService {
     private async generateTokens(id: string, email: string, userAgent: string): Promise<Tokens> {
         const secret = this.authenticationConfigService.secret;
         const accessToken = await this.jwtService.signAsync({ id, email }, { secret });
-        const refreshToken = await this.authenticationRepository.getRefreshToken({ token: undefined, userId: id, userAgent });
+        const refreshToken = await this.authenticationRepository.getRefreshToken({
+            token: undefined,
+            userId: id,
+            userAgent,
+        });
 
         // todo: maybe create upsert method in prisma
         if (!refreshToken) {
@@ -100,5 +157,12 @@ export class AuthenticationService {
             accessToken: `Bearer ${accessToken}`,
             refreshToken,
         };
+    }
+
+    private async sendCodeToEmail(firstName: string, lastName: string, email: string): Promise<void> {
+        const code = createConfirmCode();
+
+        await this.cacheInformationService.setCodeConfirm(email, code);
+        await this.mailService.sendUserConfirmationCode(firstName, lastName, email, code);
     }
 }

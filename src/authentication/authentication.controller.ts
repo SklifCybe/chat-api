@@ -11,11 +11,13 @@ import {
     ClassSerializerInterceptor,
     HttpStatus,
     Delete,
+    Put,
+    Logger,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
-import { unableToRegisterUserError, unableToEnterError } from '../common/helpers/error-message.helper';
+import { unableToRegisterUserError, unableToEnterError, unableToSendAnEmail } from '../common/helpers/error-message.helper';
 import type { Tokens } from '../common/interfaces/tokens.interface';
 import { REFRESH_TOKEN } from '../common/constants/token.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
@@ -23,9 +25,12 @@ import { Cookie } from '../common/decorators/cookie.decorator';
 import { UserAgent } from '../common/decorators/user-agent.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { UserResponse } from '../common/response/user.response';
+import { ConfirmDto } from './dto/confirm.dto';
+import { NewCodeDto } from './dto/new-code.dto';
 
 @Controller('auth')
 export class AuthenticationController {
+    private readonly logger = new Logger(AuthenticationController.name);
     constructor(
         private readonly authenticationService: AuthenticationService,
         private readonly applicationConfigService: ApplicationConfigService,
@@ -57,6 +62,37 @@ export class AuthenticationController {
         this.setRefreshTokenToCookies(tokens, response);
 
         return { accessToken: tokens.accessToken };
+    }
+
+    @Public()
+    @Post('confirm')
+    public async confirm(
+        @Res({ passthrough: true }) response: Response,
+        @UserAgent() userAgent: string,
+        @Body() confirmDto: ConfirmDto,
+    ): Promise<{ accessToken: string }> {
+        const tokens = await this.authenticationService.confirm(confirmDto, userAgent);
+
+        if (!tokens) {
+            throw new BadRequestException(unableToEnterError(JSON.stringify(confirmDto)));
+        }
+
+        this.setRefreshTokenToCookies(tokens, response);
+
+        return { accessToken: tokens.accessToken };
+    }
+
+    @Public()
+    @Put('new-code')
+    public async newCode(@Body() newCodeDto: NewCodeDto): Promise<HttpStatus> {
+        try {
+            await this.authenticationService.newCode(newCodeDto);
+        } catch (error) {
+            this.logger.error(error);
+            throw new BadRequestException(unableToSendAnEmail(newCodeDto.email));
+        }
+         
+        return HttpStatus.NO_CONTENT;
     }
 
     @Get('refresh-tokens')

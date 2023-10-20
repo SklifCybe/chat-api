@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Confirmation</title>
+</head>
+<body>
+    <p>Hello, <%= locals.firstName %> <%= locals.lastName %></p>
+    <p>You have successfully registered for our <%= locals.applicationName %>.</p>
+    <p>To complete the process, please enter the following confirmation code in the app:</p>
+    <h2><%= locals.confirmationCode %></h2>
+    <p>Thank you for choosing our product!</p>
+    <p>Best regards,<br> 
+    <%= locals.applicationName %> Team</p>
+</body>
+</html>

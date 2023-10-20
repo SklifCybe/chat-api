@@ -1,4 +1,4 @@
-export const convertToMilliseconds = (time: string): number => {
+export const convertToSeconds = (time: string): number => {
     const numberTime = Number(time);
     const character = time.at(time.length - 1);
 
@@ -21,6 +21,9 @@ export const convertToMilliseconds = (time: string): number => {
         case 'd':
             seconds = 24 * 60 * 60;
             break;
+        case 'w':
+            seconds = 24 * 60 * 60 * 7;
+            break;
         case 'M':
             seconds = 30 * 24 * 60 * 60;
             break;
@@ -33,5 +36,5 @@ export const convertToMilliseconds = (time: string): number => {
 
     const num = parseInt(time.slice(0, -1));
 
-    return num * seconds * 1000;
+    return num * seconds;
 }

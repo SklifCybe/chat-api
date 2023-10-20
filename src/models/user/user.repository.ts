@@ -8,12 +8,13 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UserRepository {
     constructor(
         private readonly prismaService: PrismaService,
+        // todo: remove cacheManager and user cacheInformation
         @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     ) {}
 
-    public async create(email: string, hashedPassword: string): Promise<User> {
+    public async create(firstName: string, lastName: string, email: string, hashedPassword: string): Promise<User> {
         return this.prismaService.user.create({
-            data: { email, password: hashedPassword },
+            data: { firstName, lastName, email, password: hashedPassword },
         });
     }
 
@@ -43,5 +44,9 @@ export class UserRepository {
         await Promise.allSettled([this.cacheManager.del(user.id), this.cacheManager.del(user.email)]);
 
         return user;
+    }
+
+    public async confirm(id: string): Promise<User> {
+        return this.prismaService.user.update({ where: { id }, data: { mailConfirmed: true } });
     }
 }

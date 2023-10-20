@@ -8,13 +8,15 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    // todo: maybe changed to hashedPassword?
-    password  String
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    token     Token[]
+    id            String   @id @default(uuid())
+    firstName     String
+    lastName      String
+    email         String   @unique
+    mailConfirmed Boolean  @default(false)
+    password      String
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
+    token         Token[]
 
     @@map("users")
 }

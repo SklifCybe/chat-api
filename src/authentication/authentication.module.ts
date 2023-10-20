@@ -9,9 +9,12 @@ import { AuthenticationRepository } from './authentication.repository';
 import { AuthenticationConfigService } from '../config/authentication/config.service';
 import { ApplicationConfigService } from '../config/application/config.service';
 import { STRATEGIES } from './strategies';
+import { MailModule } from '../models/mail/mail.module';
+import { MailService } from '../models/mail/mail.service';
+import { CacheInformationService } from '../models/cache-information/cache-information.service';
 
 @Module({
-    imports: [PassportModule, UserModule, AuthenticationProviderModule],
+    imports: [PassportModule, UserModule, AuthenticationProviderModule, MailModule],
     controllers: [AuthenticationController],
     providers: [
         AuthenticationService,
@@ -19,6 +22,8 @@ import { STRATEGIES } from './strategies';
         JwtService,
         AuthenticationConfigService,
         ApplicationConfigService,
+        MailService,
+        CacheInformationService,
         ...STRATEGIES,
     ],
 })

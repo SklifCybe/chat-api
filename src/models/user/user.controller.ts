@@ -1,8 +1,6 @@
 import {
-    Body,
     Controller,
     Param,
-    Post,
     Get,
     Delete,
     ParseUUIDPipe,
@@ -10,7 +8,6 @@ import {
     ClassSerializerInterceptor,
     ForbiddenException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponse } from '../../common/response/user.response';
 import { UserService } from './user.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -20,14 +17,6 @@ import { JwtPayload } from '../../common/interfaces/jwt.interface';
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
-
-    @UseInterceptors(ClassSerializerInterceptor)
-    @Post()
-    public async create(@Body() createUserDto: CreateUserDto): Promise<UserResponse> {
-        const user = await this.userService.create(createUserDto);
-
-        return new UserResponse(user);
-    }
 
     @UseInterceptors(ClassSerializerInterceptor)
     @Get(':id')

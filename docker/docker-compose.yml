@@ -3,7 +3,9 @@ version: '3.5'
 services:
   postgres:
     container_name: postgres_container
-    build: ./.
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -19,7 +21,9 @@ services:
 
   pgadmin:
     container_name: pgadmin_container
-    build: ./.
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -31,6 +35,14 @@ services:
       - postgres
     restart: unless-stopped
 
+  redis:
+    container_name: redis_container
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    ports:
+      - "${REDIS_PORT}:6379"
+
 networks:
   postgres:
     driver: bridge
@@ -38,3 +50,4 @@ networks:
 volumes:
   postgres:
   pgadmin:
+  redis:
