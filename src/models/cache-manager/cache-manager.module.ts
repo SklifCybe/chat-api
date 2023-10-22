@@ -1,13 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 import { AuthenticationConfigModule } from '../../config/authentication/config.module';
 import { AuthenticationConfigService } from '../../config/authentication/config.service';
-import { CacheInformationService } from './cache-information.service';
+import { CacheManagerService } from './cache-manager.service';
 
 @Global()
 @Module({
     imports: [AuthenticationConfigModule],
-    providers: [CacheInformationService, AuthenticationConfigService],
-    exports: [CacheInformationService],
+    providers: [CacheManagerService, AuthenticationConfigService],
+    exports: [CacheManagerService],
 })
-// todo: rename to CacheManagerModule and rename CacheManagerService
-export class CacheInformationModule {}
+export class CacheManagerModule {}

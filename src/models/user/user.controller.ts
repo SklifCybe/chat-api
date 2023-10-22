@@ -35,12 +35,16 @@ export class UserController {
     public async remove(
         @Param('id', ParseUUIDPipe) id: string,
         @CurrentUser() userJwtPayload: JwtPayload,
-    ): Promise<UserResponse> {
+    ): Promise<UserResponse | null> {
         if (id !== userJwtPayload.id) {
             throw new ForbiddenException();
         }
 
         const user = await this.userService.remove(id);
+
+        if (!user) {
+            return null;
+        }
 
         return new UserResponse(user);
     }

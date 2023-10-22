@@ -1,52 +1,74 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { Injectable, Logger } from '@nestjs/common';
 import type { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheManagerService } from '../cache-manager/cache-manager.service';
 
 @Injectable()
 export class UserRepository {
+    private readonly logger = new Logger(UserRepository.name);
     constructor(
         private readonly prismaService: PrismaService,
-        // todo: remove cacheManager and user cacheInformation
-        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+        private readonly cacheManagerService: CacheManagerService,
     ) {}
 
-    public async create(firstName: string, lastName: string, email: string, hashedPassword: string): Promise<User> {
-        return this.prismaService.user.create({
-            data: { firstName, lastName, email, password: hashedPassword },
-        });
+    public async create(
+        firstName: string,
+        lastName: string,
+        email: string,
+        hashedPassword: string,
+    ): Promise<User | null> {
+        try {
+            return this.prismaService.user.create({
+                data: { firstName, lastName, email, password: hashedPassword },
+            });
+        } catch (error) {
+            this.logger.error(error);
+            return null;
+        }
     }
 
     public async findOne(idOrEmail: string): Promise<User | null> {
-        const user = await this.cacheManager.get<User | null>(idOrEmail);
+        const user = await this.cacheManagerService.get<User | undefined | null>(idOrEmail);
 
         if (user) {
             return user;
         }
 
-        // todo: check user.findFirst throw or not exception
-        const foundUser = await this.prismaService.user.findFirst({
-            where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] },
-        });
+        try {
+            // todo: check user.findFirst throw or not exception
+            const foundUser = await this.prismaService.user.findFirst({
+                where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] },
+            });
 
-        await this.cacheManager.set(idOrEmail, foundUser);
+            await this.cacheManagerService.set(idOrEmail, foundUser);
 
-        return foundUser;
+            return foundUser;
+        } catch (error) {
+            this.logger.error(error);
+            return null;
+        }
     }
 
-    public async remove(id: string): Promise<User> {
-        await this.cacheManager.del(id);
+    public async remove(id: string): Promise<User | null> {
+        try {
+            // todo: check user.delete throw or not exception
+            const user = await this.prismaService.user.delete({ where: { id } });
 
-        // todo: check user.delete throw or not exception
-        const user = await this.prismaService.user.delete({ where: { id } });
+            await Promise.allSettled([this.cacheManagerService.del(user.id), this.cacheManagerService.del(user.email)]);
 
-        await Promise.allSettled([this.cacheManager.del(user.id), this.cacheManager.del(user.email)]);
-
-        return user;
+            return user;
+        } catch (error) {
+            this.logger.error(error);
+            return null;
+        }
     }
 
-    public async confirm(id: string): Promise<User> {
-        return this.prismaService.user.update({ where: { id }, data: { mailConfirmed: true } });
+    public async confirm(id: string): Promise<User | null> {
+        try {
+            return this.prismaService.user.update({ where: { id }, data: { mailConfirmed: true } });
+        } catch (error) {
+            this.logger.error(error);
+            return null;
+        }
     }
 }

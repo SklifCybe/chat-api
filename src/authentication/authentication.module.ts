@@ -11,7 +11,7 @@ import { ApplicationConfigService } from '../config/application/config.service';
 import { STRATEGIES } from './strategies';
 import { MailModule } from '../models/mail/mail.module';
 import { MailService } from '../models/mail/mail.service';
-import { CacheInformationService } from '../models/cache-information/cache-information.service';
+import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
 
 @Module({
     imports: [PassportModule, UserModule, AuthenticationProviderModule, MailModule],
@@ -23,7 +23,7 @@ import { CacheInformationService } from '../models/cache-information/cache-infor
         AuthenticationConfigService,
         ApplicationConfigService,
         MailService,
-        CacheInformationService,
+        CacheManagerService,
         ...STRATEGIES,
     ],
 })

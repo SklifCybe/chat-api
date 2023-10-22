@@ -7,7 +7,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { IsEmailUniqueValidate } from './common/decorators/is-email-unique.decorator';
 import { ApplicationConfigModule } from './config/application/config.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
-import { CacheInformationModule } from './models/cache-information/cache-information.module';
+import { CacheManagerModule } from './models/cache-manager/cache-manager.module';
 import { RedisProviderModule } from './providers/redis/provider.module';
 
 @Module({
@@ -18,7 +18,7 @@ import { RedisProviderModule } from './providers/redis/provider.module';
         ConfigModule.forRoot({ isGlobal: true }),
         ApplicationConfigModule,
         RedisProviderModule,
-        CacheInformationModule,
+        CacheManagerModule,
     ],
     controllers: [],
     providers: [IsEmailUniqueValidate, { provide: APP_GUARD, useClass: JwtAuthGuard }],

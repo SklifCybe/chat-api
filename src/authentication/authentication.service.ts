@@ -17,7 +17,7 @@ import { AuthenticationConfigService } from '../config/authentication/config.ser
 import { MailService } from '../models/mail/mail.service';
 import { createConfirmCode } from '../common/utils/create-confirm-code';
 import type { ConfirmDto } from './dto/confirm.dto';
-import { CacheInformationService } from '../models/cache-information/cache-information.service';
+import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
 import type { NewCodeDto } from './dto/new-code.dto';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class AuthenticationService {
         private readonly authenticationRepository: AuthenticationRepository,
         private readonly authenticationConfigService: AuthenticationConfigService,
         private readonly mailService: MailService,
-        private readonly cacheInformationService: CacheInformationService,
+        private readonly cacheManagerService: CacheManagerService,
     ) {}
 
     public async signUp(signUpDto: SignUpDto): Promise<User | null> {
@@ -72,7 +72,7 @@ export class AuthenticationService {
 
     public async confirm(confirmDto: ConfirmDto, userAgent: string): Promise<Tokens | null> {
         try {
-            const codeFromCache = await this.cacheInformationService.getCodeConfirm(confirmDto.email);
+            const codeFromCache = await this.cacheManagerService.getCodeConfirm(confirmDto.email);
 
             if (!codeFromCache) {
                 throw new BadRequestException(CODE_EXPIRED);
@@ -162,7 +162,7 @@ export class AuthenticationService {
     private async sendCodeToEmail(firstName: string, lastName: string, email: string): Promise<void> {
         const code = createConfirmCode();
 
-        await this.cacheInformationService.setCodeConfirm(email, code);
+        await this.cacheManagerService.setCodeConfirm(email, code);
         await this.mailService.sendUserConfirmationCode(firstName, lastName, email, code);
     }
 }
