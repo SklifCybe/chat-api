@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
-import { VERIFICATION_MAIL_FOLDER } from '../../common/constants/paths.constant';
 import { MailConfigModule } from '../../config/mail/config.module';
 import { MailConfigService } from '../../config/mail/config.service';
 import { ApplicationConfigModule } from '../../config/application/config.module';
 import { ApplicationConfigService } from '../../config/application/config.service';
 import { APPLICATION_NAME } from '../../common/constants/application-name.constant';
+import { join } from 'path';
 
 @Module({
     imports: [
@@ -32,7 +32,7 @@ import { APPLICATION_NAME } from '../../common/constants/application-name.consta
                     },
                 },
                 template: {
-                    dir: VERIFICATION_MAIL_FOLDER,
+                    dir: join(process.cwd(), 'src/mails'),
                     adapter: new EjsAdapter(),
                     options: {
                         strict: true,

@@ -89,6 +89,7 @@ export class AuthenticationService {
             }
 
             await this.userService.confirm(user.id);
+            await this.mailService.sendSuccessfulSignUp(user.email);
 
             return this.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
@@ -163,6 +164,6 @@ export class AuthenticationService {
         const code = createConfirmCode();
 
         await this.cacheManagerService.setCodeConfirm(email, code);
-        await this.mailService.sendUserConfirmationCode(firstName, lastName, email, code);
+        await this.mailService.sendConfirmationCode(firstName, lastName, email, code);
     }
 }
