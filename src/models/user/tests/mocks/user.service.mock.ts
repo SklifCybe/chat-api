@@ -22,3 +22,9 @@ export const mockUserReturn: User = {
     updatedAt: new Date(),
     id: 'id',
 };
+export const mockUserRepository = {
+    create: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+    confirm: jest.fn(),
+}

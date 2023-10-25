@@ -7,7 +7,7 @@ import { UserService } from '../user.service';
 import { UserRepository } from '../user.repository';
 import { CacheManagerService } from '../../../models/cache-manager/cache-manager.service';
 import { AuthenticationConfigService } from '../../../config/authentication/config.service';
-import { mockSignUpDto, mockUserReturn, mockHashedPassword, mockSalt } from './mocks/user.service.mock';
+import { mockSignUpDto, mockUserReturn, mockHashedPassword, mockSalt, mockUserRepository } from './mocks/user.service.mock';
 
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => mockHashedPassword),
@@ -16,12 +16,6 @@ jest.mock('bcrypt', () => ({
 
 describe('UserService', () => {
     let userService: UserService;
-    const mockUserRepository = {
-        create: jest.fn(),
-        findOne: jest.fn(),
-        remove: jest.fn(),
-        confirm: jest.fn(),
-    };
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
