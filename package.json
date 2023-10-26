@@ -18,8 +18,10 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "docker:up": "docker compose -f ./docker/docker-compose.yml up -d",
-        "docker:down": "docker compose -f ./docker/docker-compose.yml down"
+        "dev:docker:up": "docker compose --env-file=.env.development -f ./docker/docker-compose.yml up -d",
+        "dev:docker:down": "docker compose --env-file=.env.development -f ./docker/docker-compose.yml down",
+        "prod:docker:up": "docker compose --env-file=.env.production -f ./docker/docker-compose.yml up -d",
+        "prod:docker:down": "docker compose --env-file=.env.production -f ./docker/docker-compose.yml down"
     },
     "dependencies": {
         "@nestjs-modules/mailer": "^1.9.1",
