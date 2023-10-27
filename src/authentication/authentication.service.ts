@@ -41,7 +41,7 @@ export class AuthenticationService {
             const { firstName, lastName, email } = signUpDto;
             const code = createConfirmCode();
 
-            await this.sendCodeToEmail(firstName, lastName, email, code);
+            await this.sendCodeToEmail(email, code, { firstName, lastName });
 
             return this.userService.create(signUpDto);
         } catch (error) {
@@ -122,7 +122,7 @@ export class AuthenticationService {
 
     public async newCode(newCodeDto: NewCodeDto): Promise<void> {
         try {
-            const { email, firstName, lastName } = newCodeDto;
+            const { email } = newCodeDto;
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(email);
             const user = await this.userService.findOneByEmail(email);
             const code = createConfirmCode();
@@ -138,8 +138,8 @@ export class AuthenticationService {
             if (user.mailConfirmed) {
                 throw new BadRequestException(USER_ALREADY_CONFIRMED);
             }
-            // todo: create new email for new code. this email just content only code
-            await this.sendCodeToEmail(firstName, lastName, email, code);
+
+            await this.sendCodeToEmail(email, code);
         } catch (error) {
             this.logger.error(error);
 
@@ -207,8 +207,17 @@ export class AuthenticationService {
         };
     }
 
-    private async sendCodeToEmail(firstName: string, lastName: string, email: string, code: string): Promise<void> {
+    private async sendCodeToEmail(
+        email: string,
+        code: string,
+        userInfo?: { firstName: string; lastName: string },
+    ): Promise<void> {
         await this.cacheManagerService.setCodeConfirm(email, code);
-        await this.mailService.sendConfirmationCode(firstName, lastName, email, code);
+
+        if (userInfo) {
+            await this.mailService.sendConfirmationCode(userInfo.firstName, userInfo.lastName, email, code);
+        } else {
+            await this.mailService.sendNewConfirmationCode(email, code);
+        }
     }
 }

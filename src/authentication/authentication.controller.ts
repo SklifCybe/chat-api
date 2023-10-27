@@ -97,6 +97,7 @@ export class AuthenticationController {
     @Public()
     @Post('new-code')
     public async newCode(@Body() newCodeDto: NewCodeDto): Promise<void> {
+        // todo: remove dto, add @Param, validate by pipe, change swagger schema, maybe change description in swagger
         await this.authenticationService.newCode(newCodeDto);
     }
 

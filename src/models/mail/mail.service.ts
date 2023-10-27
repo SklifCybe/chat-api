@@ -7,7 +7,8 @@ import { APPLICATION_NAME } from '../../common/constants/application-name.consta
 export class MailService {
     private logger = new Logger(MailService.name);
     private readonly MAIL_FOLDER = join(process.cwd(), 'src', 'mails');
-    private readonly VERIFICATION_FOLDER = join(this.MAIL_FOLDER, 'verification', 'content');
+    private readonly VERIFICATION_CODE_FOLDER = join(this.MAIL_FOLDER, 'verification', 'content');
+    private readonly VERIFICATION_NEW_CODE_FOLDER = join(this.MAIL_FOLDER, 'new-code', 'content');
     private readonly SUCCESSFUL_SIGN_UP_FOLDER = join(this.MAIL_FOLDER, 'successful-sign-up', 'content');
 
     constructor(private readonly mailerService: MailerService) {}
@@ -22,10 +23,26 @@ export class MailService {
             await this.mailerService.sendMail({
                 to: email,
                 subject: `Registration Confirmation for ${APPLICATION_NAME}`,
-                template: this.VERIFICATION_FOLDER,
+                template: this.VERIFICATION_CODE_FOLDER,
                 context: {
                     firstName,
                     lastName,
+                    confirmationCode,
+                    applicationName: APPLICATION_NAME,
+                },
+            });
+        } catch (error) {
+            this.logger.error(error);
+        }
+    }
+
+    public async sendNewConfirmationCode(email: string, confirmationCode: string): Promise<void> {
+        try {
+            await this.mailerService.sendMail({
+                to: email,
+                subject: 'Registration Confirmation. New Code',
+                template: this.VERIFICATION_NEW_CODE_FOLDER,
+                context: {
                     confirmationCode,
                     applicationName: APPLICATION_NAME,
                 },
