@@ -14,6 +14,7 @@ import {
     Delete,
     Put,
     Logger,
+    HttpCode,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -91,6 +92,7 @@ export class AuthenticationController {
         return { accessToken: tokens.accessToken };
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Public()
     @Put('new-code')
     public async newCode(@Body() newCodeDto: NewCodeDto): Promise<HttpStatus> {

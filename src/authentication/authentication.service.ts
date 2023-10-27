@@ -12,6 +12,7 @@ import {
     CODE_EXPIRED,
     EMAIL_NOT_CONFIRMED,
     USER_ALREADY_CONFIRMED,
+    PREVIOUS_CODE,
 } from '../common/constants/error-messages.constant';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
@@ -37,8 +38,9 @@ export class AuthenticationService {
     public async signUp(signUpDto: SignUpDto): Promise<User | null> {
         try {
             const { firstName, lastName, email } = signUpDto;
+            const code = createConfirmCode();
 
-            await this.sendCodeToEmail(firstName, lastName, email);
+            await this.sendCodeToEmail(firstName, lastName, email, code);
 
             return this.userService.create(signUpDto);
         } catch (error) {
@@ -120,26 +122,30 @@ export class AuthenticationService {
     public async newCode(newCodeDto: NewCodeDto): Promise<void> {
         try {
             const { email, firstName, lastName } = newCodeDto;
+            const codeFromCache = await this.cacheManagerService.getCodeConfirm(email);
+            const user = await this.userService.findOneByEmail(email);
+            const code = createConfirmCode();
 
-            const user = await this.userService.findOneByEmail(newCodeDto.email);
-    
             if (!user) {
                 throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+            }
+
+            if (codeFromCache) {
+                throw new BadRequestException(PREVIOUS_CODE);
             }
 
             if (user.mailConfirmed) {
                 throw new BadRequestException(USER_ALREADY_CONFIRMED);
             }
-    
-            await this.sendCodeToEmail(firstName, lastName, email);
-        } catch(error) {
+
+            await this.sendCodeToEmail(firstName, lastName, email, code);
+        } catch (error) {
             this.logger.error(error);
 
             if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
                 throw error;
             }
         }
-
     }
 
     public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens> {
@@ -192,9 +198,7 @@ export class AuthenticationService {
         };
     }
 
-    private async sendCodeToEmail(firstName: string, lastName: string, email: string): Promise<void> {
-        const code = createConfirmCode();
-
+    private async sendCodeToEmail(firstName: string, lastName: string, email: string, code: string): Promise<void> {
         await this.cacheManagerService.setCodeConfirm(email, code);
         await this.mailService.sendConfirmationCode(firstName, lastName, email, code);
     }
