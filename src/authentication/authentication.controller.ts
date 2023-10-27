@@ -18,7 +18,6 @@ import {
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
-import { unableToSendAnEmail } from '../common/helpers/error-message.helper';
 import type { Tokens } from '../common/interfaces/tokens.interface';
 import { REFRESH_TOKEN } from '../common/constants/token.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
