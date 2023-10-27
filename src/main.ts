@@ -5,6 +5,7 @@ import { useContainer } from 'class-validator';
 import { swaggerSetup } from './swagger/swagger-setup.swagger';
 import { AppModule } from './app.module';
 
+// todo: what is oauth2????
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
