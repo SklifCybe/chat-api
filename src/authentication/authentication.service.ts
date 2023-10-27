@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 import type { Token, User } from '@prisma/client';
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../models/user/user.service';
 import type { SignUpDto } from './dto/sign-up.dto';
 import type { SignInDto } from './dto/sign-in.dto';
@@ -13,6 +13,7 @@ import {
     EMAIL_NOT_CONFIRMED,
     USER_ALREADY_CONFIRMED,
     PREVIOUS_CODE,
+    USER_NOT_FOUND,
 } from '../common/constants/error-messages.constant';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
@@ -127,7 +128,7 @@ export class AuthenticationService {
             const code = createConfirmCode();
 
             if (!user) {
-                throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+                throw new NotFoundException(USER_NOT_FOUND);
             }
 
             if (codeFromCache) {
@@ -137,12 +138,12 @@ export class AuthenticationService {
             if (user.mailConfirmed) {
                 throw new BadRequestException(USER_ALREADY_CONFIRMED);
             }
-
+            // todo: create new email for new code. this email just content only code
             await this.sendCodeToEmail(firstName, lastName, email, code);
         } catch (error) {
             this.logger.error(error);
 
-            if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
                 throw error;
             }
         }
@@ -155,21 +156,21 @@ export class AuthenticationService {
             if (!token) {
                 throw new UnauthorizedException();
             }
-    
+
             await this.authenticationRepository.removeRefreshToken(refreshToken);
-    
+
             if (new Date(token.expired) < new Date()) {
                 throw new UnauthorizedException();
             }
-    
+
             const user = await this.userService.findOneById(token.userId);
-    
+
             if (!user) {
                 throw new UnauthorizedException(USER_HAS_BEEN_DELETED);
             }
-    
+
             return this.generateTokens(user.id, user.email, userAgent);
-        } catch(error) {
+        } catch (error) {
             this.logger.error(error);
 
             if (error instanceof UnauthorizedException) {

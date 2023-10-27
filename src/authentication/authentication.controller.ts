@@ -31,6 +31,7 @@ import { INCORRECT_DATA } from '../common/constants/error-messages.constant';
 import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.decorator';
 import { ApiResponseSignIn } from '../swagger/decorators/api-response-sign-in.decorator';
 import { ApiResponseConfirm } from '../swagger/decorators/api-response-confirm.decorator';
+import { ApiResponseNewCode } from '../swagger/decorators/api-response-new-code.decorator';
 import type { AccessTokenResponse } from '../common/responses/access-token.response';
 
 @ApiTags('Authentication')
@@ -91,16 +92,16 @@ export class AuthenticationController {
         return { accessToken: tokens.accessToken };
     }
 
+    @ApiResponseNewCode()
     @HttpCode(HttpStatus.NO_CONTENT)
     @Public()
     @Post('new-code')
-    public async newCode(@Body() newCodeDto: NewCodeDto): Promise<HttpStatus> {
+    public async newCode(@Body() newCodeDto: NewCodeDto): Promise<void> {
         await this.authenticationService.newCode(newCodeDto);
-
-        return HttpStatus.NO_CONTENT;
     }
 
     @ApiBearerAuth()
+    // todo: it not get method. change to other method
     @Get('refresh-tokens')
     public async refreshTokens(
         @Cookie(REFRESH_TOKEN) refreshToken: string,
@@ -110,7 +111,7 @@ export class AuthenticationController {
         if (!refreshToken) {
             throw new UnauthorizedException();
         }
-        
+
         const tokens = await this.authenticationService.refreshTokens(refreshToken, userAgent);
 
         if (!tokens) {
