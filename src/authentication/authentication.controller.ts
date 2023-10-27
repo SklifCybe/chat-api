@@ -14,6 +14,7 @@ import {
     Delete,
     Logger,
     HttpCode,
+    Param,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -95,10 +96,9 @@ export class AuthenticationController {
     @ApiResponseNewCode()
     @HttpCode(HttpStatus.NO_CONTENT)
     @Public()
-    @Post('new-code')
-    public async newCode(@Body() newCodeDto: NewCodeDto): Promise<void> {
-        // todo: remove dto, add @Param, validate by pipe, change swagger schema, maybe change description in swagger
-        await this.authenticationService.newCode(newCodeDto);
+    @Post('new-code/:email')
+    public async newCode(@Param() newCodeDto: NewCodeDto): Promise<void> {
+        await this.authenticationService.newCode(newCodeDto.email);
     }
 
     @ApiBearerAuth()

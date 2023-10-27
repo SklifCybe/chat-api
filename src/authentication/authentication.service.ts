@@ -120,9 +120,8 @@ export class AuthenticationService {
         }
     }
 
-    public async newCode(newCodeDto: NewCodeDto): Promise<void> {
+    public async newCode(email: string): Promise<void> {
         try {
-            const { email } = newCodeDto;
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(email);
             const user = await this.userService.findOneByEmail(email);
             const code = createConfirmCode();
