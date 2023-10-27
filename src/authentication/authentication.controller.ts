@@ -81,7 +81,6 @@ export class AuthenticationController {
         @UserAgent() userAgent: string,
         @Body() confirmDto: ConfirmDto,
     ): Promise<AccessTokenResponse> {
-        // todo: if user has been activated, throw error
         const tokens = await this.authenticationService.confirm(confirmDto, userAgent);
 
         if (!tokens) {
@@ -96,13 +95,7 @@ export class AuthenticationController {
     @Public()
     @Put('new-code')
     public async newCode(@Body() newCodeDto: NewCodeDto): Promise<HttpStatus> {
-        try {
-            // todo: if user has been activated, throw error
-            await this.authenticationService.newCode(newCodeDto);
-        } catch (error) {
-            this.logger.error(error);
-            throw new BadRequestException(unableToSendAnEmail(newCodeDto.email));
-        }
+        await this.authenticationService.newCode(newCodeDto);
 
         return HttpStatus.NO_CONTENT;
     }

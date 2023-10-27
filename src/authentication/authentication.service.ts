@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 import type { Token, User } from '@prisma/client';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../models/user/user.service';
 import type { SignUpDto } from './dto/sign-up.dto';
 import type { SignInDto } from './dto/sign-in.dto';
@@ -11,6 +11,7 @@ import {
     WRONG_EMAIL_OR_PASSWORD,
     CODE_EXPIRED,
     EMAIL_NOT_CONFIRMED,
+    USER_ALREADY_CONFIRMED,
 } from '../common/constants/error-messages.constant';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
@@ -83,6 +84,15 @@ export class AuthenticationService {
     public async confirm(confirmDto: ConfirmDto, userAgent: string): Promise<Tokens | null> {
         try {
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(confirmDto.email);
+            const user = await this.userService.findOneByEmail(confirmDto.email);
+
+            if (!user) {
+                throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+            }
+
+            if (user.mailConfirmed) {
+                throw new BadRequestException(USER_ALREADY_CONFIRMED);
+            }
 
             if (!codeFromCache) {
                 throw new UnauthorizedException(CODE_EXPIRED);
@@ -92,20 +102,14 @@ export class AuthenticationService {
                 throw new UnauthorizedException(INCORRECT_VERIFICATION_CODE);
             }
 
-            const user = await this.userService.findOneByEmail(confirmDto.email);
-
-            if (!user) {
-                throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
-            }
-
             await this.userService.confirm(user.id);
             await this.mailService.sendSuccessfulSignUp(user.email);
 
             return this.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
-        
-            if (error instanceof UnauthorizedException) {
+
+            if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
                 throw error;
             }
 
@@ -114,15 +118,28 @@ export class AuthenticationService {
     }
 
     public async newCode(newCodeDto: NewCodeDto): Promise<void> {
-        const { email, firstName, lastName } = newCodeDto;
+        try {
+            const { email, firstName, lastName } = newCodeDto;
 
-        const user = await this.userService.findOneByEmail(newCodeDto.email);
+            const user = await this.userService.findOneByEmail(newCodeDto.email);
+    
+            if (!user) {
+                throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+            }
 
-        if (!user) {
-            throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
+            if (user.mailConfirmed) {
+                throw new BadRequestException(USER_ALREADY_CONFIRMED);
+            }
+    
+            await this.sendCodeToEmail(firstName, lastName, email);
+        } catch(error) {
+            this.logger.error(error);
+
+            if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
+                throw error;
+            }
         }
 
-        await this.sendCodeToEmail(firstName, lastName, email);
     }
 
     public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens> {

@@ -1,3 +1,4 @@
+// todo: add prefix description, because we have callision with error messages
 export const USER_LOGGED_IN = 'The user logged in and tokens were generated.';
 export const USER_ADD_DATABASE = 'User has been add to database.';
 export const USER_ALREADY_EXIST = 'User already exist in database.';
