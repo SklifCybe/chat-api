@@ -22,7 +22,6 @@ import { MailService } from '../models/mail/mail.service';
 import { createConfirmCode } from '../common/utils/create-confirm-code';
 import type { ConfirmDto } from './dto/confirm.dto';
 import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
-import type { NewCodeDto } from './dto/new-code.dto';
 
 @Injectable()
 export class AuthenticationService {
