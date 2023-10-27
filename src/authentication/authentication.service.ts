@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 import type { Token, User } from '@prisma/client';
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../models/user/user.service';
 import type { SignUpDto } from './dto/sign-up.dto';
 import type { SignInDto } from './dto/sign-in.dto';
@@ -85,7 +85,7 @@ export class AuthenticationService {
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(confirmDto.email);
 
             if (!codeFromCache) {
-                throw new BadRequestException(CODE_EXPIRED);
+                throw new UnauthorizedException(CODE_EXPIRED);
             }
 
             if (confirmDto.code !== codeFromCache) {
@@ -104,6 +104,11 @@ export class AuthenticationService {
             return this.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
+        
+            if (error instanceof UnauthorizedException) {
+                throw error;
+            }
+
             return null;
         }
     }

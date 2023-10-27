@@ -18,7 +18,7 @@ import {
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
-import { unableToEnterError, unableToSendAnEmail } from '../common/helpers/error-message.helper';
+import { unableToSendAnEmail } from '../common/helpers/error-message.helper';
 import type { Tokens } from '../common/interfaces/tokens.interface';
 import { REFRESH_TOKEN } from '../common/constants/token.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
@@ -31,6 +31,7 @@ import { NewCodeDto } from './dto/new-code.dto';
 import { INCORRECT_DATA } from '../common/constants/error-messages.constant';
 import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.decorator';
 import { ApiResponseSignIn } from '../swagger/decorators/api-response-sign-in.decorator';
+import { ApiResponseConfirm } from '../swagger/decorators/api-response-confirm.decorator';
 import type { AccessTokenResponse } from '../common/responses/access-token.response';
 
 @ApiTags('Authentication')
@@ -72,17 +73,19 @@ export class AuthenticationController {
         return { accessToken: tokens.accessToken };
     }
 
+    @ApiResponseConfirm()
     @Public()
     @Post('confirm')
     public async confirm(
         @Res({ passthrough: true }) response: Response,
         @UserAgent() userAgent: string,
         @Body() confirmDto: ConfirmDto,
-    ): Promise<{ accessToken: string }> {
+    ): Promise<AccessTokenResponse> {
+        // todo: if user has been activated, throw error
         const tokens = await this.authenticationService.confirm(confirmDto, userAgent);
 
         if (!tokens) {
-            throw new BadRequestException(unableToEnterError(JSON.stringify(confirmDto)));
+            throw new BadRequestException(INCORRECT_DATA);
         }
 
         this.setRefreshTokenToCookies(tokens, response);
@@ -94,6 +97,7 @@ export class AuthenticationController {
     @Put('new-code')
     public async newCode(@Body() newCodeDto: NewCodeDto): Promise<HttpStatus> {
         try {
+            // todo: if user has been activated, throw error
             await this.authenticationService.newCode(newCodeDto);
         } catch (error) {
             this.logger.error(error);

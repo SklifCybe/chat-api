@@ -46,6 +46,7 @@ export class AuthenticationRepository {
     private generateInfoForRefreshToken(): { token: string; expired: Date } {
         return {
             token: v4(),
+            // todo: expired should be .env file
             expired: add(new Date(), { months: 1 }),
         };
     }
