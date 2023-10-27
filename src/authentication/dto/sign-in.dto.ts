@@ -8,10 +8,10 @@ import { EXAMPLE_EMAIL, EXAMPLE_PASSWORD } from '../../common/constants/swagger-
 export class SignInDto {
     @ApiProperty({ example: EXAMPLE_EMAIL })
     @IsEmail()
-    email: string;
+    public readonly email: string;
 
     @ApiProperty({ minLength: 6, example: EXAMPLE_PASSWORD })
     @IsString()
     @MinLength(6)
-    password: string;
+    public readonly password: string;
 }

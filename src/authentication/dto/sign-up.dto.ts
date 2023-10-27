@@ -14,26 +14,26 @@ export class SignUpDto {
     @IsString()
     @Length(2, 20)
     // todo: add constant messages to error for all decorators in all dto files
-    firstName: string;
+    public readonly firstName: string;
 
     @ApiProperty({ minLength: 2, maxLength: 20, example: EXAMPLE_LAST_NAME })
     @IsString()
     @Length(2, 20)
-    lastName: string;
+    public readonly lastName: string;
 
     @ApiProperty({ uniqueItems: true, example: EXAMPLE_EMAIL })
     @IsEmail()
     @IsEmailUnique()
-    email: string;
+    public readonly email: string;
 
     @ApiProperty({ minLength: 6, example: EXAMPLE_PASSWORD })
     @IsString()
     @MinLength(6)
-    password: string;
+    public readonly password: string;
 
     @ApiProperty({ minLength: 6, example: EXAMPLE_PASSWORD })
     @IsString()
     @MinLength(6)
     @Validate(IsPasswordsMatchingConstrains)
-    confirmPassword: string;
+    public readonly confirmPassword: string;
 }
