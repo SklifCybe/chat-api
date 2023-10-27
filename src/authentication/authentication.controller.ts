@@ -12,7 +12,6 @@ import {
     ClassSerializerInterceptor,
     HttpStatus,
     Delete,
-    Put,
     Logger,
     HttpCode,
 } from '@nestjs/common';
@@ -94,7 +93,7 @@ export class AuthenticationController {
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @Public()
-    @Put('new-code')
+    @Post('new-code')
     public async newCode(@Body() newCodeDto: NewCodeDto): Promise<HttpStatus> {
         await this.authenticationService.newCode(newCodeDto);
 
@@ -111,7 +110,13 @@ export class AuthenticationController {
         if (!refreshToken) {
             throw new UnauthorizedException();
         }
+        
         const tokens = await this.authenticationService.refreshTokens(refreshToken, userAgent);
+
+        if (!tokens) {
+            throw new UnauthorizedException();
+        }
+
         this.setRefreshTokenToCookies(tokens, response);
 
         return tokens;

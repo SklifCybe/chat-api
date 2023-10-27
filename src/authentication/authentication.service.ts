@@ -148,28 +148,36 @@ export class AuthenticationService {
         }
     }
 
-    public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens> {
-        const token = await this.authenticationRepository.getRefreshToken({ token: refreshToken });
+    public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens | null> {
+        try {
+            const token = await this.authenticationRepository.getRefreshToken({ token: refreshToken });
 
-        if (!token) {
-            throw new UnauthorizedException();
+            if (!token) {
+                throw new UnauthorizedException();
+            }
+    
+            await this.authenticationRepository.removeRefreshToken(refreshToken);
+    
+            if (new Date(token.expired) < new Date()) {
+                throw new UnauthorizedException();
+            }
+    
+            const user = await this.userService.findOneById(token.userId);
+    
+            if (!user) {
+                throw new UnauthorizedException(USER_HAS_BEEN_DELETED);
+            }
+    
+            return this.generateTokens(user.id, user.email, userAgent);
+        } catch(error) {
+            this.logger.error(error);
+
+            if (error instanceof UnauthorizedException) {
+                throw error;
+            }
+
+            return null;
         }
-
-        await this.authenticationRepository.removeRefreshToken(refreshToken);
-
-        if (new Date(token.expired) < new Date()) {
-            throw new UnauthorizedException();
-        }
-
-        const user = await this.userService.findOneById(token.userId);
-
-        if (!user) {
-            throw new UnauthorizedException(USER_HAS_BEEN_DELETED);
-        }
-
-        const tokens = await this.generateTokens(user.id, user.email, userAgent);
-
-        return tokens;
     }
 
     private async generateTokens(id: string, email: string, userAgent: string): Promise<Tokens> {
