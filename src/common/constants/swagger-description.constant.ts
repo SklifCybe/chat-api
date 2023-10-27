@@ -9,4 +9,4 @@ export const USER_NOT_FOUND =
 export const CODE_UNAUTHORIZED = "Code expired, code doesn't match the one sent by email or user by email not found.";
 export const CODE_TO_EMAIL = 'Code will be send to email.'
 export const USER_NOT_FOUND_BY_EMAIl = 'User not found in database by email.'
-export const PREVIOUS_CODE_STILL_EXIST = 'The previous code still exists in redis, the user is already verified or body validation throw exception.'
+export const PREVIOUS_CODE_STILL_EXIST = 'The previous code still exists in redis, the user is already confirmed or body validation throw exception.'
