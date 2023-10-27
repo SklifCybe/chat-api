@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { ValidatorConstraint, registerDecorator } from 'class-validator';
-import type { ValidatorConstraintInterface, ValidationArguments, ValidationOptions } from 'class-validator';
-import type { SignUpDto } from '../../authentication/dto/sign-up.dto';
+import type { ValidatorConstraintInterface, ValidationOptions } from 'class-validator';
 import { emailExistError } from '../helpers/error-message.helper';
 import { UserService } from '../../models/user/user.service';
 
@@ -12,12 +11,12 @@ export class IsEmailUniqueValidate implements ValidatorConstraintInterface {
 
     public async validate(email: string): Promise<boolean> {
         const user = await this.userService.findOneByEmail(email);
-        return user === null;
-    }
 
-    public defaultMessage(validationArguments: ValidationArguments): string {
-        const obj = validationArguments.object as SignUpDto;
-        return emailExistError(obj.email);
+        if (user) {
+            throw new ConflictException(emailExistError(email));
+        }
+
+        return true;
     }
 }
 

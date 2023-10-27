@@ -12,8 +12,11 @@ import { UserResponse } from '../../common/response/user.response';
 import { UserService } from './user.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtPayload } from '../../common/interfaces/jwt.interface';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 // todo: you use UserController in your application?
+@ApiBearerAuth()
+@ApiTags('User')
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}

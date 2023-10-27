@@ -13,8 +13,8 @@ export class CacheManagerService {
         private readonly authenticationConfigService: AuthenticationConfigService,
     ) {}
 
-    public async getCodeConfirm(email: string): Promise<number | undefined> {
-        return this.cacheManager.get<number>(`${this.KEY_CODE_CONFIRM}:${email}`);
+    public async getCodeConfirm(email: string): Promise<string | undefined> {
+        return this.cacheManager.get<string>(`${this.KEY_CODE_CONFIRM}:${email}`);
     }
 
     public async setCodeConfirm(email: string, code: string): Promise<void> {
