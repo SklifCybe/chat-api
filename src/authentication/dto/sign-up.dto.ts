@@ -13,6 +13,7 @@ export class SignUpDto {
     @ApiProperty({ minLength: 2, maxLength: 20, example: EXAMPLE_FIRST_NAME })
     @IsString()
     @Length(2, 20)
+    // todo: add constant messages to error for all decorators in all dto files
     firstName: string;
 
     @ApiProperty({ minLength: 2, maxLength: 20, example: EXAMPLE_LAST_NAME })

@@ -1,5 +1,5 @@
 import type { User } from '@prisma/client';
-
+// todo: create one folder, then have all mocks from all project
 export const mockUserArguments = {
     data: {
         firstName: 'First',
