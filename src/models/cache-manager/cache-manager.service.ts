@@ -13,14 +13,14 @@ export class CacheManagerService {
         private readonly authenticationConfigService: AuthenticationConfigService,
     ) {}
 
-    public async getCodeConfirm(email: string): Promise<string | undefined> {
-        return this.cacheManager.get<string>(`${this.KEY_CODE_CONFIRM}:${email}`);
+    public async getCodeConfirm(email: string): Promise<string | undefined | null> {
+        return this.get<string>(`${this.KEY_CODE_CONFIRM}:${email}`);
     }
 
     public async setCodeConfirm(email: string, code: string): Promise<void> {
         const ttl = this.authenticationConfigService.getConfirmTime();
 
-        await this.cacheManager.set(`${this.KEY_CODE_CONFIRM}:${email}`, code, { ttl });
+        await this.set<string>(`${this.KEY_CODE_CONFIRM}:${email}`, code, ttl);
     }
 
     public async get<T>(key: string): Promise<T | undefined | null> {
@@ -37,7 +37,7 @@ export class CacheManagerService {
     public async set<T>(key: string, value: T, ttl?: number): Promise<T | null> {
         try {
             if (typeof ttl === 'number') {
-                return this.cacheManager.set<T>(key, value, ttl);
+                return this.cacheManager.set<T>(key, value, { ttl });
             }
 
             return this.cacheManager.set<T>(key, value);
