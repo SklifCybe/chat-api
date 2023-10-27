@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
-import { swaggerSetup } from './common/helpers/swagger-setup.helper';
+import { swaggerSetup } from './swagger/swagger-setup.swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {

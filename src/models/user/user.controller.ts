@@ -8,7 +8,7 @@ import {
     ClassSerializerInterceptor,
     ForbiddenException,
 } from '@nestjs/common';
-import { UserResponse } from '../../common/response/user.response';
+import { UserResponse } from '../../common/responses/user.response';
 import { UserService } from './user.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtPayload } from '../../common/interfaces/jwt.interface';

@@ -1,4 +1,4 @@
-import { ApiTags, ApiBearerAuth, ApiCreatedResponse, ApiConflictResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import {
     Controller,
@@ -18,21 +18,18 @@ import {
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
-import {
-    unableToRegisterUserError,
-    unableToEnterError,
-    unableToSendAnEmail,
-} from '../common/helpers/error-message.helper';
+import { unableToEnterError, unableToSendAnEmail } from '../common/helpers/error-message.helper';
 import type { Tokens } from '../common/interfaces/tokens.interface';
 import { REFRESH_TOKEN } from '../common/constants/token.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { UserAgent } from '../common/decorators/user-agent.decorator';
 import { Public } from '../common/decorators/public.decorator';
-import { UserResponse } from '../common/response/user.response';
+import { UserResponse } from '../common/responses/user.response';
 import { ConfirmDto } from './dto/confirm.dto';
 import { NewCodeDto } from './dto/new-code.dto';
-import { EmailConflictResponse } from '../common/response/email-conflict.response';
+import { INCORRECT_DATA } from '../common/constants/error-messages.constant';
+import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -43,15 +40,14 @@ export class AuthenticationController {
         private readonly applicationConfigService: ApplicationConfigService,
     ) {}
 
-    @ApiCreatedResponse({ type: UserResponse })
-    @ApiConflictResponse({ type: EmailConflictResponse })
+    @ApiResponseSignUp()
     @UseInterceptors(ClassSerializerInterceptor)
     @Public()
     @Post('sign-up')
     public async signUp(@Body() signUpDto: SignUpDto): Promise<UserResponse> {
         const user = await this.authenticationService.signUp(signUpDto);
         if (!user) {
-            throw new BadRequestException(unableToRegisterUserError(JSON.stringify(signUpDto)));
+            throw new BadRequestException(INCORRECT_DATA);
         }
         return new UserResponse(user);
     }
