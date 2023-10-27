@@ -32,7 +32,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { UserResponse } from '../common/response/user.response';
 import { ConfirmDto } from './dto/confirm.dto';
 import { NewCodeDto } from './dto/new-code.dto';
-import { EmailConflictException } from '../common/exceptions/email-conflict.exception';
+import { EmailConflictResponse } from '../common/response/email-conflict.response';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -44,7 +44,7 @@ export class AuthenticationController {
     ) {}
 
     @ApiCreatedResponse({ type: UserResponse })
-    @ApiConflictResponse({ type: EmailConflictException })
+    @ApiConflictResponse({ type: EmailConflictResponse })
     @UseInterceptors(ClassSerializerInterceptor)
     @Public()
     @Post('sign-up')
