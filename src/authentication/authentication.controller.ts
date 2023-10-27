@@ -30,6 +30,8 @@ import { ConfirmDto } from './dto/confirm.dto';
 import { NewCodeDto } from './dto/new-code.dto';
 import { INCORRECT_DATA } from '../common/constants/error-messages.constant';
 import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.decorator';
+import { ApiResponseSignIn } from '../swagger/decorators/api-response-sign-in.decorator';
+import type { AccessTokenResponse } from '../common/responses/access-token.response';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -52,16 +54,17 @@ export class AuthenticationController {
         return new UserResponse(user);
     }
 
+    @ApiResponseSignIn()
     @Public()
     @Post('sign-in')
     public async signIn(
         @Body() signInDto: SignInDto,
         @Res({ passthrough: true }) response: Response,
         @UserAgent() userAgent: string,
-    ): Promise<{ accessToken: string }> {
+    ): Promise<AccessTokenResponse> {
         const tokens = await this.authenticationService.signIn(signInDto, userAgent);
         if (!tokens) {
-            throw new BadRequestException(unableToEnterError(JSON.stringify(signInDto)));
+            throw new BadRequestException(INCORRECT_DATA);
         }
 
         this.setRefreshTokenToCookies(tokens, response);

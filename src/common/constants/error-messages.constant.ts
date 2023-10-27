@@ -4,3 +4,4 @@ export const USER_HAS_BEEN_DELETED = 'User has been deleted';
 export const INCORRECT_VERIFICATION_CODE = 'Incorrect verification code';
 export const INCORRECT_DATA = 'Incorrect data. Please try again';
 export const CODE_EXPIRED = 'Code time has expired';
+export const EMAIL_NOT_CONFIRMED = 'Email not confirmed';

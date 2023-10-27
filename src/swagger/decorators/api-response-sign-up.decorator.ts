@@ -8,5 +8,5 @@ export const ApiResponseSignUp = () =>
     applyDecorators(
         ApiCreatedResponse({ type: UserResponse, description: 'User has been add to database.' }),
         ApiConflictResponse({ type: EmailConflictResponse, description: 'User already exist in database.' }),
-        ApiBadRequestResponse({ type: IncorrectDataResponse, description: 'Incorrect data.' }),
+        ApiBadRequestResponse({ type: IncorrectDataResponse, description: 'Incorrect data or body validation throw exception.' }),
     );

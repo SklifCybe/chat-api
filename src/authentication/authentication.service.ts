@@ -10,6 +10,7 @@ import {
     USER_HAS_BEEN_DELETED,
     WRONG_EMAIL_OR_PASSWORD,
     CODE_EXPIRED,
+    EMAIL_NOT_CONFIRMED,
 } from '../common/constants/error-messages.constant';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
@@ -59,9 +60,18 @@ export class AuthenticationService {
                 throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
             }
 
+            if (!user.mailConfirmed) {
+                throw new UnauthorizedException(EMAIL_NOT_CONFIRMED);
+            }
+
             return this.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
+
+            if (error instanceof UnauthorizedException) {
+                throw error;
+            }
+
             return null;
         }
     }
