@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Environment } from '../../common/interfaces/environment.interface';
-import { convertTimeToSeconds } from '../../common/utils/convert-time-to-seconds';
+import { convertTime } from '../../common/utils/convert-time';
 
 // todo: delete and transfer to redis
 @Injectable()
@@ -11,6 +11,6 @@ export class UserConfigService {
     private readonly userExpireTime = this.configService.get<string>('JWT_EXPIRE');
 
     public getUserExpireTimeInMilliseconds(): number {
-        return typeof this.userExpireTime === 'undefined' ? 0 : convertTimeToSeconds(this.userExpireTime);
+        return typeof this.userExpireTime === 'undefined' ? 0 : convertTime('seconds', this.userExpireTime);
     }
 }

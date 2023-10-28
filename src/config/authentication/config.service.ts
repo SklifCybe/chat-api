@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { convertTimeToSeconds } from '../../common/utils/convert-time-to-seconds';
+import { convertTime } from '../../common/utils/convert-time';
 import { DEFAULT_TIME_JWT_EXPIRE } from '../../common/constants/jwt.constant';
 import type { Environment } from '../../common/interfaces/environment.interface';
 
@@ -16,6 +16,6 @@ export class AuthenticationConfigService {
     };
 
     public getConfirmTime(): number {
-        return convertTimeToSeconds(this.confirmTime);
+        return convertTime('seconds', this.confirmTime);
     }
 }

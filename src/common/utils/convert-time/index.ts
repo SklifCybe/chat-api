@@ -1,4 +1,6 @@
-export const convertTimeToSeconds = (time: string): number => {
+type Mode = 'seconds' | 'milliseconds';
+
+export const convertTime = (mode: Mode, time: string): number => {
     const numberTime = Number(time);
     const character = time.at(time.length - 1);
 
@@ -35,6 +37,7 @@ export const convertTimeToSeconds = (time: string): number => {
     }
 
     const num = parseInt(time.slice(0, -1));
+    const result = num * seconds;
 
-    return num * seconds;
-}
+    return mode === 'seconds' ? result : result * 1000;
+};
