@@ -9,20 +9,25 @@ import { EmailConflictResponse } from '../../common/responses/email-conflict.res
 import { IncorrectDataResponse } from '../../common/responses/incorrect-data.response';
 import { CodeExpiredResponse } from '../../common/responses/code-expired.response';
 import { IncorrectExpiredCodeConversationResponse } from '../../common/responses/incorrect-expired-code-conversation.response';
-import {
-    USER_ADD_DATABASE,
-    USER_ALREADY_EXIST,
-    USER_NOT_ADD_DATABASE,
-    INCORRECT_CONVERSATION_CODE,
-} from '../../common/constants/swagger-description.constant';
+import { descriptions } from '../config.json';
+
+const {
+    user_add_database_and_return_code_expired_time,
+    user_already_exist,
+    user_not_add_database_or_body_throw_exception,
+    incorrect_conversion_of_code_expired,
+} = descriptions;
 
 export const ApiResponseSignUp = () =>
     applyDecorators(
-        ApiCreatedResponse({ type: CodeExpiredResponse, description: USER_ADD_DATABASE }),
-        ApiConflictResponse({ type: EmailConflictResponse, description: USER_ALREADY_EXIST }),
-        ApiBadRequestResponse({ type: IncorrectDataResponse, description: USER_NOT_ADD_DATABASE }),
+        ApiCreatedResponse({ type: CodeExpiredResponse, description: user_add_database_and_return_code_expired_time }),
+        ApiConflictResponse({ type: EmailConflictResponse, description: user_already_exist }),
+        ApiBadRequestResponse({
+            type: IncorrectDataResponse,
+            description: user_not_add_database_or_body_throw_exception,
+        }),
         ApiInternalServerErrorResponse({
             type: IncorrectExpiredCodeConversationResponse,
-            description: INCORRECT_CONVERSATION_CODE,
+            description: incorrect_conversion_of_code_expired,
         }),
     );

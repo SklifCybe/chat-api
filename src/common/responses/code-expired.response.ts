@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EXAMPLE_CODE_EXPIRED } from '../constants/swagger-example.constant';
 import type { Time } from '../interfaces/time.interface';
+import { examples } from '../../swagger/config.json';
+
+const { code_expired } = examples;
 
 export class CodeExpiredResponse {
-    @ApiProperty({ example: EXAMPLE_CODE_EXPIRED })
+    @ApiProperty({ example: code_expired })
     public readonly codeExpired: Time['confirmTime'];
 
     constructor(confirmTime: Time['confirmTime']) {

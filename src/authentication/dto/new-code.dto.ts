@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail } from 'class-validator';
-import { EXAMPLE_EMAIL } from '../../common/constants/swagger-example.constant';
+import { examples } from '../../swagger/config.json';
+
+const { email } = examples;
 
 export class NewCodeDto {
-    @ApiProperty({ example: EXAMPLE_EMAIL })
+    @ApiProperty({ example: email })
     @IsEmail()
     public readonly email: string;
 }

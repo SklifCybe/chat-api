@@ -1,18 +1,16 @@
 import type { HttpExceptionBody } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    EXAMPLE_USER_NOT_FOUND,
-    EXAMPLE_ERROR_NAME_NOT_FOUND,
-    EXAMPLE_ERROR_CODE_NOT_FOUND,
-} from '../constants/swagger-example.constant';
+import { examples } from '../../swagger/config.json';
+
+const { user_not_found, not_found, status_code_not_found } = examples;
 
 export class UserNotFoundResponse implements HttpExceptionBody {
-    @ApiProperty({ example: EXAMPLE_USER_NOT_FOUND })
+    @ApiProperty({ example: user_not_found })
     public readonly message: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_NAME_NOT_FOUND })
+    @ApiProperty({ example: not_found })
     public readonly error: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_CODE_NOT_FOUND })
+    @ApiProperty({ example: status_code_not_found })
     public readonly statusCode: number;
 }

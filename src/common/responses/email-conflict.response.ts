@@ -1,18 +1,16 @@
 import type { HttpExceptionBody } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    EXAMPLE_EMAIL_ALREADY_EXIST,
-    EXAMPLE_ERROR_NAME_CONFLICT,
-    EXAMPLE_ERROR_CODE_CONFLICT,
-} from '../constants/swagger-example.constant';
+import { examples } from '../../swagger/config.json';
+
+const { user_already_exist_by_email, conflict, status_code_conflict } = examples;
 
 export class EmailConflictResponse implements HttpExceptionBody {
-    @ApiProperty({ example: EXAMPLE_EMAIL_ALREADY_EXIST })
+    @ApiProperty({ example: user_already_exist_by_email })
     public readonly message: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_NAME_CONFLICT })
+    @ApiProperty({ example: conflict })
     public readonly error: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_CODE_CONFLICT })
+    @ApiProperty({ example: status_code_conflict })
     public readonly statusCode: number;
 }

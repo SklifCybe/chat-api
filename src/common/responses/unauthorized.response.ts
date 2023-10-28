@@ -1,18 +1,16 @@
 import type { HttpExceptionBody } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    EXAMPLE_WRONG_EMAIL_OR_PASSWORD,
-    EXAMPLE_ERROR_NAME_UNAUTHORIZED,
-    EXAMPLE_ERROR_CODE_UNAUTHORIZED,
-} from '../constants/swagger-example.constant';
+import { examples } from '../../swagger/config.json';
+
+const { wrong_email_or_password, unauthorized, status_code_unauthorized } = examples;
 
 export class UnauthorizedResponse implements HttpExceptionBody {
-    @ApiProperty({ example: EXAMPLE_WRONG_EMAIL_OR_PASSWORD })
+    @ApiProperty({ example: wrong_email_or_password })
     public readonly message: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_NAME_UNAUTHORIZED })
+    @ApiProperty({ example: unauthorized })
     public readonly error: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_CODE_UNAUTHORIZED })
+    @ApiProperty({ example: status_code_unauthorized })
     public readonly statusCode: number;
 }

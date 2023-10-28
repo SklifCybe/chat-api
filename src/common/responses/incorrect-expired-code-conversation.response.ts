@@ -1,18 +1,16 @@
 import type { HttpExceptionBody } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    EXAMPLE_INTERNAL_SERVER_ERROR,
-    EXAMPLE_ERROR_NAME_INTERNAL_SERVER_ERROR,
-    EXAMPLE_ERROR_CODE_INTERNAL_SERVER_ERROR,
-} from '../constants/swagger-example.constant';
+import { examples } from '../../swagger/config.json';
+
+const { incorrect_code_convert, internal_server_error, status_code_internal_server_error } = examples;
 
 export class IncorrectExpiredCodeConversationResponse implements HttpExceptionBody {
-    @ApiProperty({ example: EXAMPLE_INTERNAL_SERVER_ERROR })
+    @ApiProperty({ example: incorrect_code_convert })
     public readonly message: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_NAME_INTERNAL_SERVER_ERROR })
+    @ApiProperty({ example: internal_server_error })
     public readonly error: string;
 
-    @ApiProperty({ example: EXAMPLE_ERROR_CODE_INTERNAL_SERVER_ERROR })
+    @ApiProperty({ example: status_code_internal_server_error })
     public readonly statusCode: number;
 }
