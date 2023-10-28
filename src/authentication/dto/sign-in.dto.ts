@@ -4,7 +4,7 @@ import { examples } from '../../swagger/config.json';
 
 const { email, password } = examples;
 
-// todo: maybe delete this todos?
+// todo: maybe delete this todos? ask from Natasha best practice in java!
 // todo: add inheritance from signUpDto. Use swagger pick or other method
 // todo: after check correct validation on signInDto
 export class SignInDto {

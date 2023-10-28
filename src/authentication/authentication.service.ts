@@ -214,7 +214,7 @@ export class AuthenticationService {
             userAgent,
         });
 
-        // todo: maybe create upsert method in prisma
+        // todo: create upsert method in prisma. after, remove generateJsonForTokens method
         if (!refreshToken) {
             const newRefreshToken = await this.authenticationRepository.createRefreshToken(id, userAgent);
             return this.generateJsonForTokens(accessToken, newRefreshToken);

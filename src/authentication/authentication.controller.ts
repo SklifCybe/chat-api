@@ -47,7 +47,7 @@ export class AuthenticationController {
     @UseInterceptors(ClassSerializerInterceptor)
     @Public()
     @Post('sign-up')
-    // todo: why sign up endpoint work so long
+    // todo: why sign up endpoint work so long. if this email, just remove await from email
     public async signUp(@Body() signUpDto: SignUpDto): Promise<CodeExpiredResponse> {
         const confirmTime = await this.authenticationService.signUp(signUpDto);
 
@@ -80,7 +80,7 @@ export class AuthenticationController {
     @ApiResponseConfirm()
     @Public()
     @Post('confirm')
-    // todo: maybe after confirmation remove code?
+    // todo: after success confirmation remove code?
     public async confirm(
         @Res({ passthrough: true }) response: Response,
         @UserAgent() userAgent: string,

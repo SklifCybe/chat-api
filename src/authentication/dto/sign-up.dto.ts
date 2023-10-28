@@ -10,7 +10,7 @@ export class SignUpDto {
     @ApiProperty({ minLength: 2, maxLength: 20, example: first_name })
     @IsString()
     @Length(2, 20)
-    // todo: add constant messages to error for all decorators in all dto files
+    // todo: add constant messages to error for all decorators in all dto files. override class-validator default messages
     public readonly firstName: string;
 
     @ApiProperty({ minLength: 2, maxLength: 20, example: last_name })
