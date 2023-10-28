@@ -1,4 +1,4 @@
-export const convertToSeconds = (time: string): number => {
+export const convertTimeToSeconds = (time: string): number => {
     const numberTime = Number(time);
     const character = time.at(time.length - 1);
 

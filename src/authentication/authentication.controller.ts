@@ -53,6 +53,7 @@ export class AuthenticationController {
         if (!user) {
             throw new BadRequestException(INCORRECT_DATA);
         }
+        // todo: change success response to { status: "Successful sign up", codeExpired: timestamp }. timestamp is equal milliseconds. 1m = 1000ms
         return new UserResponse(user);
     }
 
@@ -97,7 +98,9 @@ export class AuthenticationController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Public()
     @Post('new-code/:email')
+    // todo: change to query
     public async newCode(@Param() newCodeDto: NewCodeDto): Promise<void> {
+        // todo: change success response to { status: "Successful sign up", codeExpired: timestamp }. timestamp or something else, what can handle front
         await this.authenticationService.newCode(newCodeDto.email);
     }
 
