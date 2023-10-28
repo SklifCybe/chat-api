@@ -12,7 +12,6 @@ import {
     ClassSerializerInterceptor,
     HttpStatus,
     Delete,
-    Logger,
     HttpCode,
     Param,
 } from '@nestjs/common';
@@ -38,7 +37,6 @@ import type { AccessTokenResponse } from '../common/responses/access-token.respo
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthenticationController {
-    private readonly logger = new Logger(AuthenticationController.name);
     constructor(
         private readonly authenticationService: AuthenticationService,
         private readonly applicationConfigService: ApplicationConfigService,
