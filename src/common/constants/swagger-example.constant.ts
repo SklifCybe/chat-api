@@ -1,6 +1,8 @@
 import type { Time } from '../interfaces/time.interface';
 import { WRONG_EMAIL_OR_PASSWORD, INCORRECT_DATA, USER_NOT_FOUND, INCORRECT_CODE_CONVERT } from './error-messages.constant';
 
+// todo: remove all swagger constants (examples, descriptions) and create swagger-config.json file. he must contain all examples and descriptions
+
 export const EXAMPLE_FIRST_NAME = 'Ilya';
 export const EXAMPLE_LAST_NAME = 'Strelkovskiy';
 export const EXAMPLE_EMAIL = 'i.s.toaccept@gmail.com';
