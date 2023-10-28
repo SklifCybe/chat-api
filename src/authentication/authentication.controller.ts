@@ -13,7 +13,8 @@ import {
     HttpStatus,
     Delete,
     HttpCode,
-    Param,
+    Query,
+    InternalServerErrorException,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -24,10 +25,10 @@ import { ApplicationConfigService } from '../config/application/config.service';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { UserAgent } from '../common/decorators/user-agent.decorator';
 import { Public } from '../common/decorators/public.decorator';
-import { UserResponse } from '../common/responses/user.response';
+import { CodeExpiredResponse } from '../common/responses/code-expired.response';
 import { ConfirmDto } from './dto/confirm.dto';
 import { NewCodeDto } from './dto/new-code.dto';
-import { INCORRECT_DATA } from '../common/constants/error-messages.constant';
+import { INCORRECT_DATA, INCORRECT_CODE_CONVERT } from '../common/constants/error-messages.constant';
 import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.decorator';
 import { ApiResponseSignIn } from '../swagger/decorators/api-response-sign-in.decorator';
 import { ApiResponseConfirm } from '../swagger/decorators/api-response-confirm.decorator';
@@ -46,13 +47,15 @@ export class AuthenticationController {
     @UseInterceptors(ClassSerializerInterceptor)
     @Public()
     @Post('sign-up')
-    public async signUp(@Body() signUpDto: SignUpDto): Promise<UserResponse> {
-        const user = await this.authenticationService.signUp(signUpDto);
-        if (!user) {
-            throw new BadRequestException(INCORRECT_DATA);
+    // todo: why sign up endpoint work so long
+    public async signUp(@Body() signUpDto: SignUpDto): Promise<CodeExpiredResponse> {
+        const confirmTime = await this.authenticationService.signUp(signUpDto);
+
+        if (!confirmTime) {
+            throw new InternalServerErrorException(INCORRECT_CODE_CONVERT);
         }
-        // todo: change success response to { status: "Successful sign up", codeExpired: timestamp }. timestamp is equal milliseconds. 1m = 1000ms
-        return new UserResponse(user);
+
+        return new CodeExpiredResponse(confirmTime);
     }
 
     @ApiResponseSignIn()
@@ -64,6 +67,7 @@ export class AuthenticationController {
         @UserAgent() userAgent: string,
     ): Promise<AccessTokenResponse> {
         const tokens = await this.authenticationService.signIn(signInDto, userAgent);
+
         if (!tokens) {
             throw new BadRequestException(INCORRECT_DATA);
         }
@@ -76,6 +80,7 @@ export class AuthenticationController {
     @ApiResponseConfirm()
     @Public()
     @Post('confirm')
+    // todo: maybe after confirmation remove code?
     public async confirm(
         @Res({ passthrough: true }) response: Response,
         @UserAgent() userAgent: string,
@@ -89,17 +94,22 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
+        // todo: add new AccessTokenResponse(tokens.accessToken)
         return { accessToken: tokens.accessToken };
     }
 
     @ApiResponseNewCode()
-    @HttpCode(HttpStatus.NO_CONTENT)
+    @HttpCode(HttpStatus.OK)
     @Public()
-    @Post('new-code/:email')
-    // todo: change to query
-    public async newCode(@Param() newCodeDto: NewCodeDto): Promise<void> {
-        // todo: change success response to { status: "Successful sign up", codeExpired: timestamp }. timestamp or something else, what can handle front
-        await this.authenticationService.newCode(newCodeDto.email);
+    @Post('new-code')
+    public async newCode(@Query() newCodeDto: NewCodeDto): Promise<CodeExpiredResponse> {
+        const confirmTime = await this.authenticationService.newCode(newCodeDto.email);
+
+        if (!confirmTime) {
+            throw new InternalServerErrorException(INCORRECT_CODE_CONVERT);
+        }
+
+        return new CodeExpiredResponse(confirmTime);
     }
 
     @ApiBearerAuth()

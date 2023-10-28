@@ -1,25 +1,19 @@
 import { Cache } from 'cache-manager';
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { AuthenticationConfigService } from '../../config/authentication/config.service';
 
 @Injectable()
 export class CacheManagerService {
     private readonly logger = new Logger(CacheManagerService.name);
     private readonly KEY_CODE_CONFIRM = 'CODE-CONFIRMED';
 
-    constructor(
-        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-        private readonly authenticationConfigService: AuthenticationConfigService,
-    ) {}
+    constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
     public async getCodeConfirm(email: string): Promise<string | undefined | null> {
         return this.get<string>(`${this.KEY_CODE_CONFIRM}:${email}`);
     }
 
-    public async setCodeConfirm(email: string, code: string): Promise<void> {
-        const ttl = this.authenticationConfigService.getConfirmTime();
-
+    public async setCodeConfirm(email: string, code: string, ttl: number): Promise<void> {
         await this.set<string>(`${this.KEY_CODE_CONFIRM}:${email}`, code, ttl);
     }
 

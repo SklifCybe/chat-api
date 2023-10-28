@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { hash, genSalt } from 'bcrypt';
 import type { User } from '@prisma/client';
 import { UserRepository } from './user.repository';
@@ -14,7 +14,7 @@ export class UserService {
         const hashedPassword = await this.hashPassword(password);
 
         if (hashedPassword === null) {
-            throw new BadRequestException();
+            return null;
         }
 
         return this.userRepository.create(firstName, lastName, email, hashedPassword);

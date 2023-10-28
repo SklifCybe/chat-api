@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { CacheManagerModule } from '../../../models/cache-manager/cache-manager.module';
 import { ConfigModule } from '@nestjs/config';
@@ -55,11 +54,13 @@ describe('UserService', () => {
             expect(mockUserRepository.create).toHaveBeenCalledWith(firstName, lastName, email, hashedPassword);
         });
 
-        it('should throw a BadRequestException if hashing fails', async () => {
+        it('should return null if hashPassword return null', async () => {
             const hashPassword = jest.spyOn(userService as any, 'hashPassword');
             hashPassword.mockImplementation(() => null);
 
-            await expect(userService.create(mockSignUpDto)).rejects.toThrow(BadRequestException);
+            const user = await userService.create(mockSignUpDto);
+
+            expect(user).toBeNull();
         });
     });
 

@@ -8,3 +8,4 @@ export const CODE_EXPIRED = 'Code time has expired';
 export const PREVIOUS_CODE = 'The previous code is still relevant'
 export const EMAIL_NOT_CONFIRMED = 'Email not confirmed';
 export const USER_ALREADY_CONFIRMED = 'User already confirmed';
+export const INCORRECT_CODE_CONVERT = 'Confirmation code was not converted correctly';

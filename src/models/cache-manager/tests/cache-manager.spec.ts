@@ -49,11 +49,11 @@ describe('CacheManagerService', () => {
     describe('setCodeConfirm', () => {
         it('should call with correct arguments', async () => {
             const key = `${keyCodeConfirm}:${email}`;
-            const defaultTtl = 60;
+            const ttl = 60;
 
-            await cacheManagerService.setCodeConfirm(email, code);
+            await cacheManagerService.setCodeConfirm(email, code, ttl);
 
-            expect(mockCacheManager.set).toHaveBeenCalledWith(key, code, { ttl: defaultTtl });
+            expect(mockCacheManager.set).toHaveBeenCalledWith(key, code, { ttl });
         });
     });
 

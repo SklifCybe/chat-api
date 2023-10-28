@@ -1,5 +1,5 @@
 import { compare } from 'bcrypt';
-import type { Token, User } from '@prisma/client';
+import type { Token } from '@prisma/client';
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../models/user/user.service';
 import type { SignUpDto } from './dto/sign-up.dto';
@@ -14,6 +14,7 @@ import {
     USER_ALREADY_CONFIRMED,
     PREVIOUS_CODE,
     USER_NOT_FOUND,
+    INCORRECT_DATA,
 } from '../common/constants/error-messages.constant';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationRepository } from './authentication.repository';
@@ -22,6 +23,7 @@ import { MailService } from '../models/mail/mail.service';
 import { createConfirmCode } from '../common/utils/create-confirm-code';
 import type { ConfirmDto } from './dto/confirm.dto';
 import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
+import type { Time } from '../common/interfaces/time.interface';
 
 @Injectable()
 export class AuthenticationService {
@@ -35,16 +37,31 @@ export class AuthenticationService {
         private readonly cacheManagerService: CacheManagerService,
     ) {}
 
-    public async signUp(signUpDto: SignUpDto): Promise<User | null> {
+    public async signUp(signUpDto: SignUpDto): Promise<Time['confirmTime'] | null> {
         try {
             const { firstName, lastName, email } = signUpDto;
             const code = createConfirmCode();
+            const confirmTime = this.authenticationConfigService.getConfirmTime();
 
-            await this.sendCodeToEmail(email, code, { firstName, lastName });
+            if (!confirmTime) {
+                throw new Error();
+            }
 
-            return this.userService.create(signUpDto);
+            await this.sendCodeToEmail(email, code, confirmTime.seconds, { firstName, lastName });
+            const user = await this.userService.create(signUpDto);
+
+            if (!user) {
+                throw new BadRequestException(INCORRECT_DATA);
+            }
+
+            return confirmTime;
         } catch (error) {
             this.logger.error(error);
+
+            if (error instanceof BadRequestException) {
+                throw error;
+            }
+
             return null;
         }
     }
@@ -119,11 +136,16 @@ export class AuthenticationService {
         }
     }
 
-    public async newCode(email: string): Promise<void> {
+    public async newCode(email: string): Promise<Time['confirmTime'] | null> {
         try {
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(email);
             const user = await this.userService.findOneByEmail(email);
             const code = createConfirmCode();
+            const confirmTime = this.authenticationConfigService.getConfirmTime();
+
+            if (!confirmTime) {
+                throw new Error();
+            }
 
             if (!user) {
                 throw new NotFoundException(USER_NOT_FOUND);
@@ -137,13 +159,17 @@ export class AuthenticationService {
                 throw new BadRequestException(USER_ALREADY_CONFIRMED);
             }
 
-            await this.sendCodeToEmail(email, code);
+            await this.sendCodeToEmail(email, code, confirmTime.seconds);
+
+            return confirmTime;
         } catch (error) {
             this.logger.error(error);
 
             if (error instanceof NotFoundException || error instanceof BadRequestException) {
                 throw error;
             }
+
+            return null;
         }
     }
 
@@ -208,9 +234,10 @@ export class AuthenticationService {
     private async sendCodeToEmail(
         email: string,
         code: string,
+        ttl: number,
         userInfo?: { firstName: string; lastName: string },
     ): Promise<void> {
-        await this.cacheManagerService.setCodeConfirm(email, code);
+        await this.cacheManagerService.setCodeConfirm(email, code, ttl);
 
         if (userInfo) {
             await this.mailService.sendConfirmationCode(userInfo.firstName, userInfo.lastName, email, code);
