@@ -21,7 +21,7 @@ async function bootstrap() {
 
     swaggerSetup(app);
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
+    // todo: add info log, then listen port and maybe host
     await app.listen(3000);
 }
 bootstrap();
