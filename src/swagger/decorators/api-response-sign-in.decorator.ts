@@ -1,9 +1,9 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
 import { UnauthorizedResponse } from '../../common/responses/unauthorized.response';
 import { IncorrectDataResponse } from '../../common/responses/incorrect-data.response';
-import { descriptions } from '../config.json';
+import { summary, descriptions } from '../config.json';
 
 const {
     user_logged_in_and_tokens_generated,
@@ -13,6 +13,7 @@ const {
 
 export const ApiResponseSignIn = () =>
     applyDecorators(
+        ApiOperation({ summary: summary.auth_sign_in }),
         ApiCreatedResponse({ type: AccessTokenResponse, description: user_logged_in_and_tokens_generated }),
         ApiUnauthorizedResponse({
             type: UnauthorizedResponse,

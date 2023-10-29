@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+    ApiOperation,
     ApiBadRequestResponse,
     ApiOkResponse,
     ApiNotFoundResponse,
@@ -9,7 +10,7 @@ import { UserNotFoundResponse } from '../../common/responses/user-not-found.resp
 import { IncorrectDataResponse } from '../../common/responses/incorrect-data.response';
 import { CodeExpiredResponse } from '../../common/responses/code-expired.response';
 import { IncorrectExpiredCodeConversationResponse } from '../../common/responses/incorrect-expired-code-conversation.response';
-import { descriptions } from '../config.json';
+import { summary, descriptions } from '../config.json';
 
 const {
     code_send_to_email,
@@ -20,6 +21,7 @@ const {
 
 export const ApiResponseNewCode = () =>
     applyDecorators(
+        ApiOperation({ summary: summary.auth_new_code }),
         ApiOkResponse({ type: CodeExpiredResponse, description: code_send_to_email }),
         ApiNotFoundResponse({ type: UserNotFoundResponse, description: user_not_found_by_email }),
         ApiBadRequestResponse({

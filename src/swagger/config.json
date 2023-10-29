@@ -1,4 +1,12 @@
 {
+    "summary": {
+        "auth_sign_up": "registration, after which an email with a code will be sent",
+        "auth_sign_in": "login",
+        "auth_confirm": "to confirm the user, you need to enter the code from the mail",
+        "auth_new_code": "allows you to request a new code",
+        "auth_refresh_tokens": "",
+        "auth_sign_out": ""
+    },
     "examples": {
         "bearer_access_token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3NzlhZmI1LWQzZGUtNDQzNC05YmFiLTkyNjI1MjcwZTUzMCIsImVtYWlsIjoiaS5zLnRvYWNjZXB0QGdtYWlsLmNvbSIsImlhdCI6MTY5ODQxMDM1OH0.xQwmbZuhhN5Aw9TPdDjALwiM2XywPMbPlS2uUYIGdxw",
         "first_name": "Ilya",
