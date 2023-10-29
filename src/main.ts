@@ -6,6 +6,7 @@ import { swaggerSetup } from './swagger/swagger-setup.swagger';
 import { AppModule } from './app.module';
 import { exceptionFactory } from './common/utils/exception-factory';
 
+// todo: think about change swagger config from json to yml
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const logger = new Logger();
