@@ -6,11 +6,21 @@ import { UserService } from '../user.service';
 import { UserRepository } from '../user.repository';
 import { CacheManagerService } from '../../../models/cache-manager/cache-manager.service';
 import { AuthenticationConfigService } from '../../../config/authentication/config.service';
-import { mockSignUpDto, mockUserReturn, mockHashedPassword, mockSalt, mockUserRepository } from './mocks/user.service.mock';
+import {
+    mockSignUpDto,
+    mockUserReturn,
+    hashedPassword,
+    salt,
+    mockUserRepository,
+    id,
+    mockUserUpdateFields,
+    mockUpdateFieldsWithPassword,
+} from './mocks/user.service.mock';
+import type { ConfigurationUser } from '../../../common/interfaces/configuration-user.interface';
 
 jest.mock('bcrypt', () => ({
-    hash: jest.fn(() => mockHashedPassword),
-    genSalt: jest.fn(() => mockSalt),
+    hash: jest.fn(() => hashedPassword),
+    genSalt: jest.fn(() => salt),
 }));
 
 describe('UserService', () => {
@@ -59,6 +69,42 @@ describe('UserService', () => {
             hashPassword.mockImplementation(() => null);
 
             const user = await userService.create(mockSignUpDto);
+
+            expect(user).toBeNull();
+        });
+    });
+
+    describe('update', () => {
+        it('should call userRepository.update without hashed password without problem', async () => {
+            await userService.update(id, mockUserUpdateFields);
+
+            expect(mockUserRepository.update).toHaveBeenCalledWith(id, mockUserUpdateFields);
+        });
+
+        it('should call userRepository.update with hashed password without problem', async () => {
+            const hashPassword = jest.spyOn(userService as any, 'hashPassword');
+            const received = {
+                ...mockUpdateFieldsWithPassword,
+                password: hashedPassword,
+            };
+
+            hashPassword.mockImplementation(() => hashedPassword);
+
+            await userService.update(id, mockUpdateFieldsWithPassword);
+
+            expect(mockUserRepository.update).toHaveBeenCalledWith(id, received);
+        });
+
+        it('should return null because hashPassword throw exception', async () => {
+            const hashPassword = jest.spyOn(userService as any, 'hashPassword');
+            const updateFields: ConfigurationUser['updateFields'] = {
+                ...mockUpdateFieldsWithPassword,
+                password: hashedPassword,
+            };
+
+            hashPassword.mockImplementation(() => null);
+
+            const user = await userService.update(id, updateFields);
 
             expect(user).toBeNull();
         });

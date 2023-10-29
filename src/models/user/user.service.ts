@@ -3,6 +3,7 @@ import { hash, genSalt } from 'bcrypt';
 import type { User } from '@prisma/client';
 import { UserRepository } from './user.repository';
 import type { SignUpDto } from '../../authentication/dto/sign-up.dto';
+import type { ConfigurationUser } from '../../common/interfaces/configuration-user.interface';
 
 @Injectable()
 export class UserService {
@@ -34,6 +35,20 @@ export class UserService {
 
     public async confirm(id: string): Promise<User | null> {
         return this.userRepository.confirm(id);
+    }
+
+    public async update(id: string, updateFields: ConfigurationUser['updateFields']): Promise<User | null> {
+        if (updateFields.password) {
+            const hashedPassword = await this.hashPassword(updateFields.password);
+
+            if (hashedPassword === null) {
+                return null;
+            }
+
+            return this.userRepository.update(id, { ...updateFields, password: hashedPassword });
+        }
+
+        return this.userRepository.update(id, updateFields);
     }
 
     private async hashPassword(password: string): Promise<string | null> {

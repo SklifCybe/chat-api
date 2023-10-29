@@ -13,6 +13,9 @@ import {
     mockUserConfirmed,
     mockUserArguments,
     mockUserCreated,
+    userId,
+    updateFields,
+    userUpdated,
 } from './mocks/user.repository.mock';
 
 describe('UserRepository', () => {
@@ -187,6 +190,36 @@ describe('UserRepository', () => {
             );
 
             const user = await userRepository.confirm(mockUserConfirmed.id);
+
+            expect(user).toBeNull();
+        });
+    });
+
+    describe('update', () => {
+        it('should return user if user was updated', async () => {
+            mockPrismaService.user.update.mockImplementation(() => userUpdated);
+
+            const user = await userRepository.update(userId, updateFields);
+
+            expect(user).toEqual(userUpdated);
+        });
+
+        it('should call update method with correct arguments', async () => {
+            await userRepository.update(userId, updateFields);
+
+            const received = { where: { id: userId }, data: updateFields };
+
+            expect(mockPrismaService.user.update).toHaveBeenCalledWith(received);
+        });
+
+        it('should return null if prisma throw exception', async () => {
+            mockPrismaService.user.update.mockImplementation(
+                jest.fn(() => {
+                    throw new Error();
+                }),
+            );
+
+            const user = await userRepository.update(userId, updateFields);
 
             expect(user).toBeNull();
         });

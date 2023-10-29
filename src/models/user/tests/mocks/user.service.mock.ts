@@ -1,30 +1,44 @@
 import type { User } from '@prisma/client';
 import type { SignUpDto } from '../../../../authentication/dto/sign-up.dto';
+import type { ConfigurationUser } from '../../../../common/interfaces/configuration-user.interface';
 
-const mockPassword = '123456';
-export const mockHashedPassword = '654321';
-export const mockSalt = '123';
+const firstName = 'First';
+const lastName = 'Last';
+export const password = '123456';
+export const hashedPassword = '654321';
+export const salt = '123';
+export const id = 'uuid-1234';
 
 export const mockSignUpDto: SignUpDto = {
     email: 'test@gmail.com',
-    password: mockPassword,
-    firstName: 'First',
-    lastName: 'Second',
-    confirmPassword: mockPassword,
+    password,
+    firstName,
+    lastName,
+    confirmPassword: password,
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { confirmPassword: _, ...rest } = mockSignUpDto;
 export const mockUserReturn: User = {
     ...rest,
-    password: mockHashedPassword,
+    password: hashedPassword,
     mailConfirmed: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-    id: 'id',
+    id,
 };
 export const mockUserRepository = {
     create: jest.fn(),
     findOne: jest.fn(),
     remove: jest.fn(),
     confirm: jest.fn(),
-}
+    update: jest.fn(),
+};
+export const mockUserUpdateFields: ConfigurationUser['updateFields'] = {
+    firstName,
+    lastName,
+};
+export const mockUpdateFieldsWithPassword: ConfigurationUser['updateFields'] = {
+    firstName,
+    lastName,
+    password,
+};

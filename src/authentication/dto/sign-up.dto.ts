@@ -26,6 +26,8 @@ export class SignUpDto {
     @ApiProperty({ minLength: 6, example: password })
     @IsString()
     @MinLength(6)
+    // todo: add range password. just add maxLength equal maybe 20 symbols. do it for every dto, when use password
+    // todo: maybe create smart password. 1 symbol in upper case, 1 symbol must be number, and etc
     public readonly password: string;
 
     @ApiProperty({ minLength: 6, example: password })
