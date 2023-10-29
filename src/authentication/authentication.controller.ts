@@ -3,7 +3,6 @@ import { Response } from 'express';
 import {
     Controller,
     Post,
-    Get,
     Body,
     BadRequestException,
     UnauthorizedException,
@@ -110,8 +109,7 @@ export class AuthenticationController {
     }
 
     @ApiBearerAuth()
-    // todo: it not get method. change to other method
-    @Get('refresh-tokens')
+    @Post('refresh-tokens')
     public async refreshTokens(
         @Cookie(REFRESH_TOKEN) refreshToken: string,
         @Res({ passthrough: true }) response: Response,
