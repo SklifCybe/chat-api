@@ -6,7 +6,6 @@ import { swaggerSetup } from './swagger/swagger-setup.swagger';
 import { AppModule } from './app.module';
 import { exceptionFactory } from './common/utils/exception-factory';
 
-// todo: what is oauth2????
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const logger = new Logger();
