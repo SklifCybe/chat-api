@@ -17,6 +17,10 @@ export class CacheManagerService {
         await this.set<string>(`${this.KEY_CODE_CONFIRM}:${email}`, code, ttl);
     }
 
+    public async delCodeConfirm(email: string): Promise<void> {
+        await this.del(`${this.KEY_CODE_CONFIRM}:${email}`);
+    }
+
     public async get<T>(key: string): Promise<T | undefined | null> {
         try {
             return this.cacheManager.get<T>(key);

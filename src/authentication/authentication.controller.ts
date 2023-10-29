@@ -79,7 +79,6 @@ export class AuthenticationController {
     @ApiResponseConfirm()
     @Public()
     @Post('confirm')
-    // todo: after success confirmation remove code?
     public async confirm(
         @Res({ passthrough: true }) response: Response,
         @UserAgent() userAgent: string,

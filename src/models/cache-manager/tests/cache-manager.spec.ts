@@ -57,6 +57,17 @@ describe('CacheManagerService', () => {
         });
     });
 
+    describe('delCodeConfirm', () => {
+        it('should call with correct arguments', async () => {
+            const key = `${keyCodeConfirm}:${email}`;
+
+            await cacheManagerService.delCodeConfirm(email);
+
+            expect(mockCacheManager.del).toHaveBeenCalledWith(key);
+        });
+    });
+
+
     describe('get', () => {
         it('should return correct value by key', async () => {
             mockCacheManager.get.mockImplementation(() => code);
