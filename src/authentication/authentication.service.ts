@@ -122,7 +122,7 @@ export class AuthenticationService {
             }
 
             await this.userService.confirm(user.id);
-            await this.mailService.sendSuccessfulSignUp(user.email);
+            this.mailService.sendSuccessfulSignUp(user.email);
 
             return this.generateTokens(user.id, user.email, userAgent);
         } catch (error) {

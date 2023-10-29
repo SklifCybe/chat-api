@@ -33,7 +33,7 @@ import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.de
 import { ApiResponseSignIn } from '../swagger/decorators/api-response-sign-in.decorator';
 import { ApiResponseConfirm } from '../swagger/decorators/api-response-confirm.decorator';
 import { ApiResponseNewCode } from '../swagger/decorators/api-response-new-code.decorator';
-import type { AccessTokenResponse } from '../common/responses/access-token.response';
+import { AccessTokenResponse } from '../common/responses/access-token.response';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -73,7 +73,7 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
-        return { accessToken: tokens.accessToken };
+        return new AccessTokenResponse(tokens.accessToken);
     }
 
     @ApiResponseConfirm()
@@ -93,8 +93,7 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
-        // todo: add new AccessTokenResponse(tokens.accessToken)
-        return { accessToken: tokens.accessToken };
+        return new AccessTokenResponse(tokens.accessToken);
     }
 
     @ApiResponseNewCode()
