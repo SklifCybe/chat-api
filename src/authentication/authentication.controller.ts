@@ -47,7 +47,6 @@ export class AuthenticationController {
     @UseInterceptors(ClassSerializerInterceptor)
     @Public()
     @Post('sign-up')
-    // todo: why sign up endpoint work so long. if this email, just remove await from email
     public async signUp(@Body() signUpDto: SignUpDto): Promise<CodeExpiredResponse> {
         const confirmTime = await this.authenticationService.signUp(signUpDto);
 

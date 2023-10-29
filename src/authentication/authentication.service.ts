@@ -47,7 +47,7 @@ export class AuthenticationService {
                 throw new Error();
             }
 
-            await this.sendCodeToEmail(email, code, confirmTime.seconds, { firstName, lastName });
+            this.sendCodeToEmail(email, code, confirmTime.seconds, { firstName, lastName });
             const user = await this.userService.create(signUpDto);
 
             if (!user) {
@@ -159,7 +159,7 @@ export class AuthenticationService {
                 throw new BadRequestException(USER_ALREADY_CONFIRMED);
             }
 
-            await this.sendCodeToEmail(email, code, confirmTime.seconds);
+            this.sendCodeToEmail(email, code, confirmTime.seconds);
 
             return confirmTime;
         } catch (error) {
