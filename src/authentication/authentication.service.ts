@@ -24,6 +24,7 @@ import { createConfirmCode } from '../common/utils/create-confirm-code';
 import type { ConfirmDto } from './dto/confirm.dto';
 import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
 import type { Time } from '../common/interfaces/time.interface';
+import { codeConfirmTime } from '../common/utils/code-confirm-time';
 
 @Injectable()
 export class AuthenticationService {
@@ -41,20 +42,21 @@ export class AuthenticationService {
         try {
             const { firstName, lastName, email } = signUpDto;
             const code = createConfirmCode();
-            const confirmTime = this.authenticationConfigService.getConfirmTime();
+            const confirmTime = this.authenticationConfigService.confirmTime;
+            const confirmCodeExpired = codeConfirmTime(confirmTime);
 
-            if (!confirmTime) {
+            if (!confirmCodeExpired) {
                 throw new Error();
             }
 
-            this.sendCodeToEmail(email, code, confirmTime.seconds, { firstName, lastName });
+            this.sendCodeToEmail(email, code, confirmCodeExpired.seconds, { firstName, lastName });
             const user = await this.userService.create(signUpDto);
 
             if (!user) {
                 throw new BadRequestException(INCORRECT_DATA);
             }
 
-            return confirmTime;
+            return confirmCodeExpired;
         } catch (error) {
             this.logger.error(error);
 
@@ -143,9 +145,10 @@ export class AuthenticationService {
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(email);
             const user = await this.userService.findOneByEmail(email);
             const code = createConfirmCode();
-            const confirmTime = this.authenticationConfigService.getConfirmTime();
+            const confirmTime = this.authenticationConfigService.confirmTime;
+            const confirmCodeExpired = codeConfirmTime(confirmTime);;
 
-            if (!confirmTime) {
+            if (!confirmCodeExpired) {
                 throw new Error();
             }
 
@@ -161,9 +164,9 @@ export class AuthenticationService {
                 throw new BadRequestException(USER_ALREADY_CONFIRMED);
             }
 
-            this.sendCodeToEmail(email, code, confirmTime.seconds);
+            this.sendCodeToEmail(email, code, confirmCodeExpired.seconds);
 
-            return confirmTime;
+            return confirmCodeExpired;
         } catch (error) {
             this.logger.error(error);
 
