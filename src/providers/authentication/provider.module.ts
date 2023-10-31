@@ -10,9 +10,13 @@ import { AuthenticationConfigService } from '../../config/authentication/config.
             inject: [AuthenticationConfigService],
             useFactory: async (authenticationConfigService: AuthenticationConfigService) => ({
                 secret: authenticationConfigService.secret,
-                signOptions: authenticationConfigService.signOptions,
+                signOptions: {
+                    expiresIn: authenticationConfigService.expiresIn,
+                },
+                global: true,
             }),
         }),
     ],
+    exports: [JwtModule]
 })
 export class AuthenticationProviderModule {}

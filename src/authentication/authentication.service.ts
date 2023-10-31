@@ -211,8 +211,7 @@ export class AuthenticationService {
     }
 
     private async generateTokens(id: string, email: string, userAgent: string): Promise<Tokens> {
-        const secret = this.authenticationConfigService.secret;
-        const accessToken = await this.jwtService.signAsync({ id, email }, { secret });
+        const accessToken = await this.jwtService.signAsync({ id, email });
         const refreshToken = await this.authenticationRepository.getRefreshToken({
             token: undefined,
             userId: id,

@@ -7,6 +7,9 @@ import { AppModule } from './app.module';
 import { exceptionFactory } from './common/utils/exception-factory';
 
 // todo: think about change swagger config from json to yml
+// todo: 0000 it's code for all confirmation
+// todo: remove my account
+// todo: avatar 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const logger = new Logger();

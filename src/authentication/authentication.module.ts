@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../models/user/user.module';
 import { AuthenticationController } from './authentication.controller';
@@ -19,7 +18,6 @@ import { CacheManagerService } from '../models/cache-manager/cache-manager.servi
     providers: [
         AuthenticationService,
         AuthenticationRepository,
-        JwtService,
         AuthenticationConfigService,
         ApplicationConfigService,
         MailService,
