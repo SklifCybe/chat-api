@@ -85,4 +85,14 @@ describe('UserProfileService', () => {
             expect(mockUserService.update).toHaveBeenCalledWith(userId, updateUserDto);
         });
     });
+
+    describe('remove', () => {
+        it('should call userService.remove with userId', async () => {
+            mockUserService.remove.mockImplementation(() => updatedUser);
+
+            await userProfileService.remove(userId);
+
+            expect(mockUserService.remove).toHaveBeenCalledWith(userId);
+        });
+    });
 });

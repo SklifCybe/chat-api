@@ -1,23 +1,18 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
-import { UnauthorizedResponse } from '../../common/responses/unauthorized.response';
-import { IncorrectDataResponse } from '../../common/responses/incorrect-data.response';
-import { summary, descriptions } from '../config.json';
-
-const {
-    user_logged_in_and_tokens_generated,
-    code_expired_code_doesnt_match_the_one_sent_by_email_or_user_not_found,
-    incorrect_data_or_body_throw_exception,
-} = descriptions;
+import { ErrorResponse } from '../../common/responses/error.response';
 
 export const ApiResponseConfirm = () =>
     applyDecorators(
-        ApiOperation({ summary: summary.auth_confirm }),
-        ApiCreatedResponse({ type: AccessTokenResponse, description: user_logged_in_and_tokens_generated }),
+        ApiOperation({ summary: 'to confirm the user, you need to enter the code from the mail' }),
+        ApiCreatedResponse({ type: AccessTokenResponse, description: 'The user logged in and tokens were generated.' }),
         ApiUnauthorizedResponse({
-            type: UnauthorizedResponse,
-            description: code_expired_code_doesnt_match_the_one_sent_by_email_or_user_not_found,
+            type: ErrorResponse,
+            description: "Code expired, code doesn't match the one sent by email or user by email not found.",
         }),
-        ApiBadRequestResponse({ type: IncorrectDataResponse, description: incorrect_data_or_body_throw_exception }),
+        ApiBadRequestResponse({
+            type: ErrorResponse,
+            description: 'Incorrect data or body validation throw exception.',
+        }),
     );

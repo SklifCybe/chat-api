@@ -18,4 +18,5 @@ export const updatedUser: User = {
 export const mockUserService = {
     findOneById: jest.fn(),
     update: jest.fn(),
+    remove: jest.fn(),
 };

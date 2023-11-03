@@ -6,30 +6,21 @@ import {
     ApiNotFoundResponse,
     ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-import { UserNotFoundResponse } from '../../common/responses/user-not-found.response';
-import { IncorrectDataResponse } from '../../common/responses/incorrect-data.response';
+import { ErrorResponse } from '../../common/responses/error.response';
 import { CodeExpiredResponse } from '../../common/responses/code-expired.response';
-import { IncorrectExpiredCodeConversationResponse } from '../../common/responses/incorrect-expired-code-conversation.response';
-import { summary, descriptions } from '../config.json';
-
-const {
-    code_send_to_email,
-    user_not_found_by_email,
-    previous_code_still_exist_user_already_confirmed_body_throw_exception,
-    incorrect_conversion_of_code_expired,
-} = descriptions;
 
 export const ApiResponseNewCode = () =>
     applyDecorators(
-        ApiOperation({ summary: summary.auth_new_code }),
-        ApiOkResponse({ type: CodeExpiredResponse, description: code_send_to_email }),
-        ApiNotFoundResponse({ type: UserNotFoundResponse, description: user_not_found_by_email }),
+        ApiOperation({ summary: 'allows you to request a new code' }),
+        ApiOkResponse({ type: CodeExpiredResponse, description: 'Code will be send to email.' }),
+        ApiNotFoundResponse({ type: ErrorResponse, description: 'User not found in database by email.' }),
         ApiBadRequestResponse({
-            type: IncorrectDataResponse,
-            description: previous_code_still_exist_user_already_confirmed_body_throw_exception,
+            type: ErrorResponse,
+            description:
+                'The previous code still exists in redis, the user is already confirmed or body validation throw exception.',
         }),
         ApiInternalServerErrorResponse({
-            type: IncorrectExpiredCodeConversationResponse,
-            description: incorrect_conversion_of_code_expired,
+            type: ErrorResponse,
+            description: 'Incorrect conversion of code expired.',
         }),
     );

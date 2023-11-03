@@ -1,26 +1,19 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
-import { UnauthorizedResponse } from '../../common/responses/unauthorized.response';
-import { IncorrectDataResponse } from '../../common/responses/incorrect-data.response';
-import { summary, descriptions } from '../config.json';
-
-const {
-    user_logged_in_and_tokens_generated,
-    user_not_found_password_not_match_users_email_not_confirmed,
-    tokens_not_created_or_body_throw_exception,
-} = descriptions;
+import { ErrorResponse } from '../../common/responses/error.response';
 
 export const ApiResponseSignIn = () =>
     applyDecorators(
-        ApiOperation({ summary: summary.auth_sign_in }),
-        ApiCreatedResponse({ type: AccessTokenResponse, description: user_logged_in_and_tokens_generated }),
+        ApiOperation({ summary: 'login' }),
+        ApiCreatedResponse({ type: AccessTokenResponse, description: 'The user logged in and tokens were generated.' }),
         ApiUnauthorizedResponse({
-            type: UnauthorizedResponse,
-            description: user_not_found_password_not_match_users_email_not_confirmed,
+            type: ErrorResponse,
+            description:
+                "User was not found in the system, the passwords do not match or user's email is not confirmed.",
         }),
         ApiBadRequestResponse({
-            type: IncorrectDataResponse,
-            description: tokens_not_created_or_body_throw_exception,
+            type: ErrorResponse,
+            description: 'Tokens could not be created or body validation throw exception.',
         }),
     );

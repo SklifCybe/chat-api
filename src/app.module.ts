@@ -10,9 +10,13 @@ import { ApplicationConfigModule } from './config/application/config.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { CacheManagerModule } from './models/cache-manager/cache-manager.module';
 import { RedisProviderModule } from './providers/redis/provider.module';
+import { AuthenticationProviderModule } from './providers/authentication/provider.module';
+import { AuthenticationConfigModule } from './config/authentication/config.module';
 
 @Module({
     imports: [
+        AuthenticationProviderModule,
+        AuthenticationConfigModule,
         UserModule,
         UserProfile,
         PrismaModule,

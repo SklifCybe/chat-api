@@ -1,5 +1,6 @@
 import type { User } from '@prisma/client';
 import type { UpdateUserDto } from '../../dto/update-user.dto';
+import type { JwtPayload } from '../../../../common/interfaces/jwt.interface';
 
 export const userId = 'uuid-123';
 export const updateUserDto: UpdateUserDto = {
@@ -19,4 +20,11 @@ export const updatedUser: User = {
 };
 export const mockUserProfileService = {
     update: jest.fn(),
+    remove: jest.fn(),
+};
+export const jwtPayload: JwtPayload = {
+    email: 'test@mail.com',
+    exp: Date.now(),
+    iat: Date.now(),
+    id: userId,
 };

@@ -11,3 +11,4 @@ export const USER_ALREADY_CONFIRMED = 'User already confirmed';
 export const INCORRECT_CODE_CONVERT = 'Confirmation code was not converted correctly';
 export const BODY_IS_EMPTY = 'Request body is empty';
 export const FAILED_UPDATE_USER = 'Failed to update user';
+export const USER_DELETION_ERROR = 'User deletion error';

@@ -1,24 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
-import { examples } from '../../swagger/config.json';
-
-const { uuid, first_name, last_name, email, update_at } = examples;
 
 export class UserResponse implements User {
-    @ApiProperty({ example: uuid })
+    @ApiProperty({ example: '5779afb5-d3de-4434-9bab-92625270e530' })
     id: string;
 
-    @ApiProperty({ example: first_name })
+    @ApiProperty({ example: 'Ilya' })
     firstName: string;
 
-    @ApiProperty({ example: last_name })
+    @ApiProperty({ example: 'Strelkovskiy' })
     lastName: string;
 
-    @ApiProperty({ example: email })
+    @ApiProperty({ example: 'i.s.toaccept@gmail.com' })
     email: string;
 
-    @ApiProperty({ example: update_at })
+    @ApiProperty({ example: '2023-10-26T16:48:29.355Z' })
     updatedAt: Date;
 
     @Exclude()

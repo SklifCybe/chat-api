@@ -11,8 +11,14 @@ import { CacheManagerService } from '../../../models/cache-manager/cache-manager
 import { AuthenticationConfigService } from '../../../config/authentication/config.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserResponse } from '../../../common/responses/user.response';
-import { FAILED_UPDATE_USER } from '../../../common/constants/error-messages.constant';
-import { mockUserProfileService, updateUserDto, updatedUser, userId } from './mocks/user-profile.controller.mock';
+import { FAILED_UPDATE_USER, USER_DELETION_ERROR } from '../../../common/constants/error-messages.constant';
+import {
+    mockUserProfileService,
+    updateUserDto,
+    updatedUser,
+    userId,
+    jwtPayload,
+} from './mocks/user-profile.controller.mock';
 
 describe('UserProfileController', () => {
     let userProfileController: UserProfileController;
@@ -38,7 +44,7 @@ describe('UserProfileController', () => {
         it('should call userProfileService.update with correct arguments', async () => {
             mockUserProfileService.update.mockImplementation(() => updatedUser);
 
-            await userProfileController.update(userId, updateUserDto);
+            await userProfileController.update(jwtPayload, updateUserDto);
 
             expect(mockUserProfileService.update).toHaveBeenLastCalledWith(userId, updateUserDto);
         });
@@ -46,7 +52,7 @@ describe('UserProfileController', () => {
         it('should return user instance of UserResponse', async () => {
             mockUserProfileService.update.mockImplementation(() => updatedUser);
 
-            const user = await userProfileController.update(userId, updateUserDto);
+            const user = await userProfileController.update(jwtPayload, updateUserDto);
 
             expect(user).toBeInstanceOf(UserResponse);
         });
@@ -55,7 +61,7 @@ describe('UserProfileController', () => {
             mockUserProfileService.update.mockImplementation(() => null);
 
             try {
-                await userProfileController.update(userId, updateUserDto);
+                await userProfileController.update(jwtPayload, updateUserDto);
             } catch (error) {
                 expect(error).toBeInstanceOf(BadRequestException);
             }
@@ -65,9 +71,47 @@ describe('UserProfileController', () => {
             mockUserProfileService.update.mockImplementation(() => null);
 
             try {
-                await userProfileController.update(userId, updateUserDto);
+                await userProfileController.update(jwtPayload, updateUserDto);
             } catch (error) {
                 expect(error.message).toBe(FAILED_UPDATE_USER);
+            }
+        });
+    });
+
+    describe('remove', () => {
+        it('should call userProfileService.remove with correct arguments', async () => {
+            mockUserProfileService.remove.mockImplementation(() => updatedUser);
+
+            await userProfileController.remove(jwtPayload);
+
+            expect(mockUserProfileService.remove).toHaveBeenLastCalledWith(jwtPayload.id);
+        });
+
+        it('should return void', async () => {
+            mockUserProfileService.remove.mockImplementation(() => updatedUser);
+
+            const result = await userProfileController.remove(jwtPayload);
+
+            expect(result).toBeUndefined();
+        });
+
+        it('should throw BadRequestException if user not removed', async () => {
+            mockUserProfileService.remove.mockImplementation(() => null);
+
+            try {
+                await userProfileController.remove(jwtPayload);
+            } catch (error) {
+                expect(error).toBeInstanceOf(BadRequestException);
+            }
+        });
+
+        it('should have correct error message if user not removed', async () => {
+            mockUserProfileService.remove.mockImplementation(() => null);
+
+            try {
+                await userProfileController.remove(jwtPayload);
+            } catch (error) {
+                expect(error.message).toBe(USER_DELETION_ERROR);
             }
         });
     });

@@ -22,4 +22,8 @@ export class UserProfileService {
 
         return this.userService.update(id, updateUserDto);
     }
+
+    public async remove(id: string): Promise<User | null> {
+        return this.userService.remove(id);
+    }
 }

@@ -73,6 +73,7 @@ export class AuthenticationService {
             const user = await this.userService.findOneByEmail(signInDto.email);
 
             if (!user) {
+                // todo: change to user not registered
                 throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
             }
 
@@ -146,7 +147,7 @@ export class AuthenticationService {
             const user = await this.userService.findOneByEmail(email);
             const code = createConfirmCode();
             const confirmTime = this.authenticationConfigService.confirmTime;
-            const confirmCodeExpired = codeConfirmTime(confirmTime);;
+            const confirmCodeExpired = codeConfirmTime(confirmTime);
 
             if (!confirmCodeExpired) {
                 throw new Error();
