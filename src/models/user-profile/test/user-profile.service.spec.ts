@@ -47,7 +47,7 @@ describe('UserProfileService', () => {
     describe('update', () => {
         it('should throw BadRequestException if dto is empty', async () => {
             try {
-                await userProfileService.update(userId, {} as UpdateUserDto, file);
+                await userProfileService.update(userId, {}, file);
             } catch (error) {
                 expect(error).toBeInstanceOf(BadRequestException);
             }
@@ -55,7 +55,7 @@ describe('UserProfileService', () => {
 
         it('should have correct message in BadRequestException if dto is empty', async () => {
             try {
-                await userProfileService.update(userId, {} as UpdateUserDto, {} as File);
+                await userProfileService.update(userId, {}, {} as File);
             } catch (error) {
                 expect(error.message).toBe(BODY_IS_EMPTY);
             }
