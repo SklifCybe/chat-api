@@ -1,9 +1,9 @@
 import { codeConfirmTime } from '.';
-import type { Time } from '../../interfaces/time.interface';
+import type { ConfirmTime } from '../../types/time.type';
 
 describe('code-confirm-time', () => {
     it('should return object contain seconds and milliseconds', () => {
-        const receivedConfirmTime: Time['confirmTime'] = {
+        const receivedConfirmTime: ConfirmTime = {
             seconds: 60,
             milliseconds: 60_000,
         };

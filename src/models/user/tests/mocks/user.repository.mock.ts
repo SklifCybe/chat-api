@@ -1,5 +1,5 @@
 import type { User } from '@prisma/client';
-import type { ConfigurationUser } from 'src/common/interfaces/configuration-user.interface';
+import type { UpdateUserFields } from 'src/common/types/configuration-user.type';
 // todo: create one folder, then have all mocks from all project
 
 const firstName = 'First';
@@ -16,6 +16,7 @@ export const mockUserArguments = {
 export const mockUserCreated: User = {
     ...mockUserArguments.data,
     mailConfirmed: false,
+    avatarUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     id: userId,
@@ -37,7 +38,7 @@ export const mockCacheManagerService = {
     set: jest.fn(),
     del: jest.fn(),
 };
-export const updateFields: ConfigurationUser['updateFields'] = {
+export const updateFields: UpdateUserFields = {
     firstName,
     lastName,
 };

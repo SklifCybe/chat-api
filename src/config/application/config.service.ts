@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DEVELOPMENT, PRODUCTION } from '../../common/constants/application-status.constant';
-import type { Environment } from '../../common/interfaces/environment.interface';
+import type { Environment } from '../../common/types/environment.type';
 
 @Injectable()
 export class ApplicationConfigService {

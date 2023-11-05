@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { Time } from '../interfaces/time.interface';
+import { ConfirmTime } from '../types/time.type';
 
 export class CodeExpiredResponse {
     @ApiProperty({
@@ -8,9 +8,9 @@ export class CodeExpiredResponse {
             milliseconds: 60000,
         },
     })
-    public readonly codeExpired: Time['confirmTime'];
+    public readonly codeExpired: ConfirmTime;
 
-    constructor(confirmTime: Time['confirmTime']) {
+    constructor(confirmTime: ConfirmTime) {
         this.codeExpired = confirmTime;
     }
 }

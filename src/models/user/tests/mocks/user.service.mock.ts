@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
 import type { SignUpDto } from '../../../../authentication/dto/sign-up.dto';
-import type { ConfigurationUser } from '../../../../common/interfaces/configuration-user.interface';
+import type { UpdateUserFields } from '../../../../common/types/configuration-user.type';
 
 const firstName = 'First';
 const lastName = 'Last';
@@ -22,6 +22,7 @@ export const mockUserReturn: User = {
     ...rest,
     password: hashedPassword,
     mailConfirmed: false,
+    avatarUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     id,
@@ -33,11 +34,11 @@ export const mockUserRepository = {
     confirm: jest.fn(),
     update: jest.fn(),
 };
-export const mockUserUpdateFields: ConfigurationUser['updateFields'] = {
+export const mockUserUpdateFields: UpdateUserFields = {
     firstName,
     lastName,
 };
-export const mockUpdateFieldsWithPassword: ConfigurationUser['updateFields'] = {
+export const mockUpdateFieldsWithPassword: UpdateUserFields = {
     firstName,
     lastName,
     password,

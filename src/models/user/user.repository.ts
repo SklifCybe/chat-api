@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { User } from '@prisma/client';
-import type { ConfigurationUser } from '../../common/interfaces/configuration-user.interface';
+import type { UpdateUserFields } from '../../common/types/configuration-user.type';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheManagerService } from '../cache-manager/cache-manager.service';
 
@@ -73,7 +73,7 @@ export class UserRepository {
         }
     }
 
-    public async update(id: string, updateFields: ConfigurationUser['updateFields']): Promise<User | null> {
+    public async update(id: string, updateFields: UpdateUserFields): Promise<User | null> {
         try {
             return this.prismaService.user.update({ where: { id }, data: updateFields });
         } catch (error) {

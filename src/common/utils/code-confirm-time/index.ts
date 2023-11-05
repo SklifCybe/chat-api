@@ -1,7 +1,7 @@
-import type { Time } from '../../interfaces/time.interface';
+import type { ConfirmTime } from '../../types/time.type';
 import { convertTime } from '../convert-time';
 
-export const codeConfirmTime = (time: string): Time['confirmTime'] | null => {
+export const codeConfirmTime = (time: string): ConfirmTime | null => {
     try {
         return {
             seconds: convertTime('seconds', time),

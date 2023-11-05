@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Environment } from '../../common/interfaces/environment.interface';
+import type { Environment } from '../../common/types/environment.type';
 
 @Injectable()
 export class RedisConfigService {

@@ -18,7 +18,7 @@ import {
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
-import type { Tokens } from '../common/interfaces/tokens.interface';
+import type { Tokens } from '../common/types/tokens.type';
 import { REFRESH_TOKEN } from '../common/constants/token.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
 import { Cookie } from '../common/decorators/cookie.decorator';

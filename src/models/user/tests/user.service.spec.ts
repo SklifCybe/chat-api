@@ -16,7 +16,7 @@ import {
     mockUserUpdateFields,
     mockUpdateFieldsWithPassword,
 } from './mocks/user.service.mock';
-import type { ConfigurationUser } from '../../../common/interfaces/configuration-user.interface';
+import type { UpdateUserFields } from '../../../common/types/configuration-user.type';
 
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => hashedPassword),
@@ -97,7 +97,7 @@ describe('UserService', () => {
 
         it('should return null because hashPassword throw exception', async () => {
             const hashPassword = jest.spyOn(userService as any, 'hashPassword');
-            const updateFields: ConfigurationUser['updateFields'] = {
+            const updateFields: UpdateUserFields = {
                 ...mockUpdateFieldsWithPassword,
                 password: hashedPassword,
             };

@@ -1,6 +1,6 @@
-import type { Time } from '../../interfaces/time.interface';
+import type { TimeMode } from '../../types/time.type';
 
-export const convertTime = (mode: Time['mode'], time: string): number => {
+export const convertTime = (mode: TimeMode, time: string): number => {
     const numberTime = Number(time);
     const character = time.at(time.length - 1);
 

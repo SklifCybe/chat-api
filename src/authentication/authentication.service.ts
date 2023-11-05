@@ -4,7 +4,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException, Unauthorize
 import { UserService } from '../models/user/user.service';
 import type { SignUpDto } from './dto/sign-up.dto';
 import type { SignInDto } from './dto/sign-in.dto';
-import type { Tokens } from '../common/interfaces/tokens.interface';
+import type { Tokens } from '../common/types/tokens.type';
 import {
     INCORRECT_VERIFICATION_CODE,
     USER_HAS_BEEN_DELETED,
@@ -23,7 +23,7 @@ import { MailService } from '../models/mail/mail.service';
 import { createConfirmCode } from '../common/utils/create-confirm-code';
 import type { ConfirmDto } from './dto/confirm.dto';
 import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
-import type { Time } from '../common/interfaces/time.interface';
+import type { ConfirmTime } from '../common/types/time.type';
 import { codeConfirmTime } from '../common/utils/code-confirm-time';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class AuthenticationService {
         private readonly cacheManagerService: CacheManagerService,
     ) {}
 
-    public async signUp(signUpDto: SignUpDto): Promise<Time['confirmTime'] | null> {
+    public async signUp(signUpDto: SignUpDto): Promise<ConfirmTime | null> {
         try {
             const { firstName, lastName, email } = signUpDto;
             const code = createConfirmCode();
@@ -141,7 +141,7 @@ export class AuthenticationService {
         }
     }
 
-    public async newCode(email: string): Promise<Time['confirmTime'] | null> {
+    public async newCode(email: string): Promise<ConfirmTime | null> {
         try {
             const codeFromCache = await this.cacheManagerService.getCodeConfirm(email);
             const user = await this.userService.findOneByEmail(email);

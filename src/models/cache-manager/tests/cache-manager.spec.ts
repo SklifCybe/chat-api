@@ -67,7 +67,6 @@ describe('CacheManagerService', () => {
         });
     });
 
-
     describe('get', () => {
         it('should return correct value by key', async () => {
             mockCacheManager.get.mockImplementation(() => code);
