@@ -20,7 +20,6 @@ import {
     cloudinaryResponse,
 } from './mocks/user-profile.service.mock';
 import { CloudinaryService } from '../../../models/cloudinary/cloudinary.service';
-import type { UpdateUserDto } from '../dto/update-user.dto';
 import type { File } from '../../../common/types/file.type';
 import type { UpdateUserFields } from '../../../common/types/configuration-user.type';
 
