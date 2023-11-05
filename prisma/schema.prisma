@@ -12,6 +12,7 @@ model User {
     firstName     String
     lastName      String
     email         String   @unique
+    avatarUrl     String?  @map("avatar_url")
     mailConfirmed Boolean  @default(false)
     password      String
     createdAt     DateTime @default(now()) @map("created_at")
