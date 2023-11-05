@@ -1,1 +1,1 @@
-export const APPLICATION_NAME = 'Telegraf';
+export const APPLICATION_NAME = 'Telegraph';
