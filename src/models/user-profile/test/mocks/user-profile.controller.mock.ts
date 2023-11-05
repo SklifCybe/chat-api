@@ -1,6 +1,9 @@
+import { Buffer } from 'buffer';
+import { Readable } from 'stream';
 import type { User } from '@prisma/client';
 import type { UpdateUserDto } from '../../dto/update-user.dto';
-import type { JwtPayload } from '../../../../common/interfaces/jwt.interface';
+import type { JwtPayload } from '../../../../common/types/jwt.type';
+import type { File } from '../../../../common/types/file.type';
 
 export const userId = 'uuid-123';
 export const updateUserDto: UpdateUserDto = {
@@ -12,6 +15,7 @@ export const updatedUser: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     email: 'test@mail.com',
+    avatarUrl: null,
     firstName: 'First',
     lastName: 'Last',
     id: userId,
@@ -27,4 +31,16 @@ export const jwtPayload: JwtPayload = {
     exp: Date.now(),
     iat: Date.now(),
     id: userId,
+};
+export const file: File = {
+    fieldname: 'file',
+    originalname: 'file.png',
+    encoding: '7bit',
+    mimetype: 'image/png',
+    buffer: Buffer.alloc(5),
+    size: 172922,
+    destination: 'destination',
+    filename: 'file.png',
+    path: '/',
+    stream: new Readable(),
 };

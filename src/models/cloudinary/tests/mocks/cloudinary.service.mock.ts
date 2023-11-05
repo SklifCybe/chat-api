@@ -1,46 +1,7 @@
-import type { User } from '@prisma/client';
 import { Readable } from 'stream';
-import type { UpdateUserDto } from '../../dto/update-user.dto';
 import type { File } from '../../../../common/types/file.type';
 import type { CloudinaryResponse } from '../../../../common/types/cloudinary-response.type';
 
-export const userId = 'uuid-123';
-export const updateUserDto: UpdateUserDto = {
-    firstName: 'First',
-    lastName: 'Last',
-    password: 'password',
-};
-export const updatedUser: User = {
-    firstName: 'First',
-    lastName: 'Last',
-    password: 'password',
-    avatarUrl: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    email: 'test@mail.com',
-    id: userId,
-    mailConfirmed: true,
-};
-export const mockUserService = {
-    findOneById: jest.fn(),
-    update: jest.fn(),
-    remove: jest.fn(),
-};
-export const mockCloudinaryService = {
-    uploadImage: jest.fn(),
-};
-export const file: File = {
-    fieldname: 'file',
-    originalname: 'file.png',
-    encoding: '7bit',
-    mimetype: 'image/png',
-    buffer: Buffer.alloc(5),
-    size: 172922,
-    destination: 'destination',
-    filename: 'file.png',
-    path: '/',
-    stream: new Readable(),
-};
 export const cloudinaryResponse: CloudinaryResponse = {
     asset_id: 'c38d7237be0d429165a3bac26eadfae9',
     public_id: 'pdrly63aka6ar9liqsw4',
@@ -68,4 +29,16 @@ export const cloudinaryResponse: CloudinaryResponse = {
     metadata: {},
     moderation: ['mock'],
     pages: 0,
+};
+export const file: File = {
+    fieldname: 'file',
+    originalname: 'file.png',
+    encoding: '7bit',
+    mimetype: 'image/png',
+    buffer: Buffer.alloc(5),
+    size: 172922,
+    destination: 'destination',
+    filename: 'file.png',
+    path: '/',
+    stream: new Readable(),
 };

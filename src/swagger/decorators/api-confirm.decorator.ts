@@ -3,7 +3,7 @@ import { ApiOperation, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadReques
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
 import { ErrorResponse } from '../../common/responses/error.response';
 
-export const ApiResponseConfirm = () =>
+export const ApiConfirm = () =>
     applyDecorators(
         ApiOperation({ summary: 'to confirm the user, you need to enter the code from the mail' }),
         ApiCreatedResponse({ type: AccessTokenResponse, description: 'The user logged in and tokens were generated.' }),

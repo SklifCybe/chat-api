@@ -12,3 +12,5 @@ export const INCORRECT_CODE_CONVERT = 'Confirmation code was not converted corre
 export const BODY_IS_EMPTY = 'Request body is empty';
 export const FAILED_UPDATE_USER = 'Failed to update user';
 export const USER_DELETION_ERROR = 'User deletion error';
+export const FAILED_LOAD_AVATAR = 'Failed to load avatar image';
+export const FILE_MAX_SIZE_1_MB = 'File size exceeds 1 MB';

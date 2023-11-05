@@ -9,7 +9,7 @@ import {
 import { ErrorResponse } from '../../common/responses/error.response';
 import { CodeExpiredResponse } from '../../common/responses/code-expired.response';
 
-export const ApiResponseNewCode = () =>
+export const ApiNewCode = () =>
     applyDecorators(
         ApiOperation({ summary: 'allows you to request a new code' }),
         ApiOkResponse({ type: CodeExpiredResponse, description: 'Code will be send to email.' }),

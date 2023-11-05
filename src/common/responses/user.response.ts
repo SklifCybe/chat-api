@@ -18,6 +18,9 @@ export class UserResponse implements User {
     @ApiProperty({ example: '2023-10-26T16:48:29.355Z' })
     updatedAt: Date;
 
+    @ApiProperty({ example: 'https://res.cloudinary.com/dyfochejl/image/upload/v1699032885/jfhrcsnyttuswho9hhty.png' })
+    avatarUrl: string | null;
+
     @Exclude()
     mailConfirmed: boolean;
 

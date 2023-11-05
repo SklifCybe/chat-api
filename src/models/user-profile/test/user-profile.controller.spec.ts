@@ -12,12 +12,14 @@ import { AuthenticationConfigService } from '../../../config/authentication/conf
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserResponse } from '../../../common/responses/user.response';
 import { FAILED_UPDATE_USER, USER_DELETION_ERROR } from '../../../common/constants/error-messages.constant';
+import { CloudinaryService } from '../../cloudinary/cloudinary.service';
 import {
     mockUserProfileService,
     updateUserDto,
     updatedUser,
     userId,
     jwtPayload,
+    file,
 } from './mocks/user-profile.controller.mock';
 
 describe('UserProfileController', () => {
@@ -33,6 +35,7 @@ describe('UserProfileController', () => {
                 AuthenticationConfigService,
                 UserRepository,
                 PrismaService,
+                CloudinaryService,
                 { provide: UserProfileService, useValue: mockUserProfileService },
             ],
         }).compile();
@@ -44,15 +47,15 @@ describe('UserProfileController', () => {
         it('should call userProfileService.update with correct arguments', async () => {
             mockUserProfileService.update.mockImplementation(() => updatedUser);
 
-            await userProfileController.update(jwtPayload, updateUserDto);
+            await userProfileController.update(jwtPayload, updateUserDto, file);
 
-            expect(mockUserProfileService.update).toHaveBeenLastCalledWith(userId, updateUserDto);
+            expect(mockUserProfileService.update).toHaveBeenLastCalledWith(userId, updateUserDto, file);
         });
 
         it('should return user instance of UserResponse', async () => {
             mockUserProfileService.update.mockImplementation(() => updatedUser);
 
-            const user = await userProfileController.update(jwtPayload, updateUserDto);
+            const user = await userProfileController.update(jwtPayload, updateUserDto, file);
 
             expect(user).toBeInstanceOf(UserResponse);
         });
@@ -61,7 +64,7 @@ describe('UserProfileController', () => {
             mockUserProfileService.update.mockImplementation(() => null);
 
             try {
-                await userProfileController.update(jwtPayload, updateUserDto);
+                await userProfileController.update(jwtPayload, updateUserDto, file);
             } catch (error) {
                 expect(error).toBeInstanceOf(BadRequestException);
             }
@@ -71,7 +74,7 @@ describe('UserProfileController', () => {
             mockUserProfileService.update.mockImplementation(() => null);
 
             try {
-                await userProfileController.update(jwtPayload, updateUserDto);
+                await userProfileController.update(jwtPayload, updateUserDto, file);
             } catch (error) {
                 expect(error.message).toBe(FAILED_UPDATE_USER);
             }

@@ -8,16 +8,21 @@ import {
     BadRequestException,
     HttpCode,
     HttpStatus,
+    UploadedFile,
+    UsePipes,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserProfileService } from './user-profile.service';
 import { UserResponse } from '../../common/responses/user.response';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FAILED_UPDATE_USER, USER_DELETION_ERROR } from '../../common/constants/error-messages.constant';
-import { ApiResponseUserUpdate } from '../../swagger/decorators/api-response-user-update.decorator';
-import { ApiResponseRemoveUser } from '../../swagger/decorators/api-response-remove-user.decorator';
+import { ApiUserUpdate } from '../../swagger/decorators/api-user-update.decorator';
+import { ApiRemoveUser } from '../../swagger/decorators/api-remove-user.decorator';
 import { User } from '../../common/decorators/user.decorator';
-import { JwtPayload } from '../../common/interfaces/jwt.interface';
+import { JwtPayload } from '../../common/types/jwt.type';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationPipe } from '../../common/pipes/file-validation.pipe';
+import { File } from '../../common/types/file.type';
 
 @ApiBearerAuth()
 @ApiTags('User Profile')
@@ -25,14 +30,16 @@ import { JwtPayload } from '../../common/interfaces/jwt.interface';
 export class UserProfileController {
     constructor(private readonly userProfileService: UserProfileService) {}
 
-    @ApiResponseUserUpdate()
-    @UseInterceptors(ClassSerializerInterceptor)
+    @ApiUserUpdate()
+    @UsePipes(FileValidationPipe)
+    @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('file'))
     @Patch('update')
     public async update(
         @User() user: JwtPayload,
         @Body() updateUserDto: UpdateUserDto,
+        @UploadedFile() file: File,
     ): Promise<UserResponse> {
-        const updatedUser = await this.userProfileService.update(user.id, updateUserDto);
+        const updatedUser = await this.userProfileService.update(user.id, updateUserDto, file);
 
         if (!updatedUser) {
             throw new BadRequestException(FAILED_UPDATE_USER);
@@ -41,7 +48,7 @@ export class UserProfileController {
         return new UserResponse(updatedUser);
     }
 
-    @ApiResponseRemoveUser()
+    @ApiRemoveUser()
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete()
     public async remove(@User() user: JwtPayload): Promise<void> {

@@ -3,7 +3,7 @@ import { ApiOperation, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadReques
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
 import { ErrorResponse } from '../../common/responses/error.response';
 
-export const ApiResponseSignIn = () =>
+export const ApiSignIn = () =>
     applyDecorators(
         ApiOperation({ summary: 'login' }),
         ApiCreatedResponse({ type: AccessTokenResponse, description: 'The user logged in and tokens were generated.' }),

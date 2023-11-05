@@ -28,10 +28,10 @@ import { CodeExpiredResponse } from '../common/responses/code-expired.response';
 import { ConfirmDto } from './dto/confirm.dto';
 import { NewCodeDto } from './dto/new-code.dto';
 import { INCORRECT_DATA, INCORRECT_CODE_CONVERT } from '../common/constants/error-messages.constant';
-import { ApiResponseSignUp } from '../swagger/decorators/api-response-sign-up.decorator';
-import { ApiResponseSignIn } from '../swagger/decorators/api-response-sign-in.decorator';
-import { ApiResponseConfirm } from '../swagger/decorators/api-response-confirm.decorator';
-import { ApiResponseNewCode } from '../swagger/decorators/api-response-new-code.decorator';
+import { ApiSignUp } from '../swagger/decorators/api-sign-up.decorator';
+import { ApiSignIn } from '../swagger/decorators/api-sign-in.decorator';
+import { ApiConfirm } from '../swagger/decorators/api-confirm.decorator';
+import { ApiNewCode } from '../swagger/decorators/api-new-code.decorator';
 import { AccessTokenResponse } from '../common/responses/access-token.response';
 
 @ApiTags('Authentication')
@@ -42,7 +42,7 @@ export class AuthenticationController {
         private readonly applicationConfigService: ApplicationConfigService,
     ) {}
 
-    @ApiResponseSignUp()
+    @ApiSignUp()
     @UseInterceptors(ClassSerializerInterceptor)
     @Public()
     @Post('sign-up')
@@ -56,7 +56,7 @@ export class AuthenticationController {
         return new CodeExpiredResponse(confirmTime);
     }
 
-    @ApiResponseSignIn()
+    @ApiSignIn()
     @Public()
     @Post('sign-in')
     public async signIn(
@@ -75,7 +75,7 @@ export class AuthenticationController {
         return new AccessTokenResponse(tokens.accessToken);
     }
 
-    @ApiResponseConfirm()
+    @ApiConfirm()
     @Public()
     @Post('confirm')
     public async confirm(
@@ -94,7 +94,7 @@ export class AuthenticationController {
         return new AccessTokenResponse(tokens.accessToken);
     }
 
-    @ApiResponseNewCode()
+    @ApiNewCode()
     @HttpCode(HttpStatus.OK)
     @Public()
     @Post('new-code')

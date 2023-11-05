@@ -9,7 +9,7 @@ import {
 import { CodeExpiredResponse } from '../../common/responses/code-expired.response';
 import { ErrorResponse } from '../../common/responses/error.response';
 
-export const ApiResponseSignUp = () =>
+export const ApiSignUp = () =>
     applyDecorators(
         ApiOperation({ summary: 'registration, after which an email with a code will be sent' }),
         ApiCreatedResponse({

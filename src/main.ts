@@ -9,6 +9,7 @@ import { exceptionFactory } from './common/utils/exception-factory';
 // todo: think about change swagger config from json to yml
 // todo: 0000 it's code for all confirmation
 // todo: add backend app to docker
+// todo: when swagger schema is end. remove all decorators and transfer swagger schema to yml file
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const logger = new Logger();

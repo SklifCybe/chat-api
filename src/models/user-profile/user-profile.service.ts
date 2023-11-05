@@ -1,26 +1,37 @@
 import type { User } from '@prisma/client';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import type { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from '../user/user.service';
-import { USER_NOT_FOUND, BODY_IS_EMPTY } from '../../common/constants/error-messages.constant';
+import { BODY_IS_EMPTY, FAILED_LOAD_AVATAR } from '../../common/constants/error-messages.constant';
 import { isEmptyObject } from '../../common/utils/is-empty-object';
+import type { File } from '../../common/types/file.type';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import type { UpdateUserFields } from '../../common/types/configuration-user.type';
 
 @Injectable()
 export class UserProfileService {
-    constructor(private readonly userService: UserService) {}
-    
-    public async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
-        if (isEmptyObject(updateUserDto)) {
+    constructor(
+        private readonly userService: UserService,
+        private readonly cloudinaryService: CloudinaryService,
+    ) {}
+
+    public async update(id: string, updateUserDto: UpdateUserDto, avatarFile: File): Promise<User | null> {
+        if (isEmptyObject(Object.assign({}, updateUserDto, avatarFile))) {
             throw new BadRequestException(BODY_IS_EMPTY);
         }
 
-        const user = await this.userService.findOneById(id);
+        const avatarImage = await this.cloudinaryService.uploadImage(avatarFile);
 
-        if (!user) {
-            throw new NotFoundException(USER_NOT_FOUND);
+        if (!avatarImage) {
+            throw new BadRequestException(FAILED_LOAD_AVATAR);
         }
 
-        return this.userService.update(id, updateUserDto);
+        const updateFields: UpdateUserFields = {
+            ...updateUserDto,
+            avatarUrl: avatarImage.secure_url,
+        };
+
+        return this.userService.update(id, updateFields);
     }
 
     public async remove(id: string): Promise<User | null> {
