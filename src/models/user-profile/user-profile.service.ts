@@ -16,7 +16,7 @@ export class UserProfileService {
     ) {}
 
     public async update(id: string, updateUserDto: UpdateUserDto, avatarFile: File): Promise<User | null> {
-        if (isEmptyObject(Object.assign({}, updateUserDto, avatarFile))) {
+        if (isEmptyObject(updateUserDto, avatarFile)) {
             throw new BadRequestException(BODY_IS_EMPTY);
         }
 

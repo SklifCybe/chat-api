@@ -1,3 +1,5 @@
-export const isEmptyObject = (object: any): boolean => {
-    return Object.keys(object).length === 0;
+export const isEmptyObject = (...objects: Array<any>): boolean => {
+    const totalObject = Object.assign({}, ...objects);
+
+    return Object.keys(totalObject).length === 0;
 }
