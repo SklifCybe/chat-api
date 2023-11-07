@@ -16,8 +16,6 @@ import {
     USER_NOT_FOUND,
     INCORRECT_DATA,
 } from '../common/constants/error-messages.constant';
-import { JwtService } from '@nestjs/jwt';
-import { AuthenticationRepository } from './authentication.repository';
 import { AuthenticationConfigService } from '../config/authentication/config.service';
 import { MailService } from '../models/mail/mail.service';
 import { createConfirmCode } from '../common/utils/create-confirm-code';
@@ -25,17 +23,17 @@ import type { ConfirmDto } from './dto/confirm.dto';
 import { CacheManagerService } from '../models/cache-manager/cache-manager.service';
 import type { ConfirmTime } from '../common/types/time.type';
 import { codeConfirmTime } from '../common/utils/code-confirm-time';
+import { TokensService } from '../models/tokens/tokens.service';
 
 @Injectable()
 export class AuthenticationService {
     private readonly logger = new Logger(AuthenticationService.name);
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService,
-        private readonly authenticationRepository: AuthenticationRepository,
         private readonly authenticationConfigService: AuthenticationConfigService,
         private readonly mailService: MailService,
         private readonly cacheManagerService: CacheManagerService,
+        private readonly tokensService: TokensService
     ) {}
 
     public async signUp(signUpDto: SignUpDto): Promise<ConfirmTime | null> {
@@ -87,7 +85,7 @@ export class AuthenticationService {
                 throw new UnauthorizedException(EMAIL_NOT_CONFIRMED);
             }
 
-            return this.generateTokens(user.id, user.email, userAgent);
+            return this.tokensService.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
 
@@ -100,7 +98,7 @@ export class AuthenticationService {
     }
 
     public async signOut(refreshToken: string): Promise<Token> {
-        return this.authenticationRepository.removeRefreshToken(refreshToken);
+        return this.tokensService.removeRefreshToken(refreshToken);
     }
 
     public async confirm(confirmDto: ConfirmDto, userAgent: string): Promise<Tokens | null> {
@@ -129,7 +127,7 @@ export class AuthenticationService {
 
             this.mailService.sendSuccessfulSignUp(user.email);
 
-            return this.generateTokens(user.id, user.email, userAgent);
+            return this.tokensService.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
 
@@ -181,13 +179,13 @@ export class AuthenticationService {
 
     public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens | null> {
         try {
-            const token = await this.authenticationRepository.getRefreshToken({ token: refreshToken });
+            const token = await this.tokensService.getRefreshToken({ token: refreshToken });
 
             if (!token) {
                 throw new UnauthorizedException();
             }
 
-            await this.authenticationRepository.removeRefreshToken(refreshToken);
+            await this.tokensService.removeRefreshToken(refreshToken);
 
             if (new Date(token.expired) < new Date()) {
                 throw new UnauthorizedException();
@@ -199,7 +197,7 @@ export class AuthenticationService {
                 throw new UnauthorizedException(USER_HAS_BEEN_DELETED);
             }
 
-            return this.generateTokens(user.id, user.email, userAgent);
+            return this.tokensService.generateTokens(user.id, user.email, userAgent);
         } catch (error) {
             this.logger.error(error);
 
@@ -209,31 +207,6 @@ export class AuthenticationService {
 
             return null;
         }
-    }
-
-    private async generateTokens(id: string, email: string, userAgent: string): Promise<Tokens> {
-        const accessToken = await this.jwtService.signAsync({ id, email });
-        const refreshToken = await this.authenticationRepository.getRefreshToken({
-            token: undefined,
-            userId: id,
-            userAgent,
-        });
-
-        // todo: create upsert method in prisma. after, remove generateJsonForTokens method
-        if (!refreshToken) {
-            const newRefreshToken = await this.authenticationRepository.createRefreshToken(id, userAgent);
-            return this.generateJsonForTokens(accessToken, newRefreshToken);
-        } else {
-            const oldRefreshToken = await this.authenticationRepository.updateRefreshToken(refreshToken.token);
-            return this.generateJsonForTokens(accessToken, oldRefreshToken);
-        }
-    }
-
-    private generateJsonForTokens(accessToken: string, refreshToken: Token): Tokens {
-        return {
-            accessToken: `Bearer ${accessToken}`,
-            refreshToken,
-        };
     }
 
     private async sendCodeToEmail(

@@ -27,10 +27,10 @@ export const mockUserProfileService = {
     remove: jest.fn(),
 };
 export const jwtPayload: JwtPayload = {
+    id: userId,
     email: 'test@mail.com',
     exp: Date.now(),
     iat: Date.now(),
-    id: userId,
 };
 export const file: File = {
     fieldname: 'file',

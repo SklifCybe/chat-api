@@ -19,7 +19,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
 import type { Tokens } from '../common/types/tokens.type';
-import { REFRESH_TOKEN } from '../common/constants/token.constant';
+import { REFRESH_TOKEN, REFRESH_TOKEN_MAX_AGE } from '../common/constants/jwt.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { UserAgent } from '../common/decorators/user-agent.decorator';
@@ -109,12 +109,13 @@ export class AuthenticationController {
     }
 
     @ApiBearerAuth()
+    @Public()
     @Post('refresh-tokens')
     public async refreshTokens(
         @Cookie(REFRESH_TOKEN) refreshToken: string,
         @Res({ passthrough: true }) response: Response,
         @UserAgent() userAgent: string,
-    ): Promise<Tokens> {
+    ): Promise<AccessTokenResponse> {
         if (!refreshToken) {
             throw new UnauthorizedException();
         }
@@ -127,7 +128,7 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
-        return tokens;
+        return new AccessTokenResponse(tokens.accessToken);
     }
 
     @ApiBearerAuth()
@@ -152,7 +153,7 @@ export class AuthenticationController {
         response.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
             httpOnly: true,
             sameSite: 'lax',
-            expires: new Date(tokens.refreshToken.expired),
+            maxAge: REFRESH_TOKEN_MAX_AGE,
             secure: this.applicationConfigService.isProduction,
             path: '/',
         });

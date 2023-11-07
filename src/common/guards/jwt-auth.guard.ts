@@ -28,14 +28,14 @@ export class JwtAuthGuard extends AuthGuard(JWT) implements CanActivate {
         }
 
         const request = context.switchToHttp().getRequest();
-        const token = this.extractTokenFromHeader(request);
+        const accessToken = this.extractTokenFromHeader(request);
 
-        if (!token) {
+        if (!accessToken) {
             throw new UnauthorizedException();
         }
 
         try {
-            const payload = await this.jwtService.verifyAsync(token, {
+            const payload = await this.jwtService.verifyAsync(accessToken, {
                 secret: this.authenticationConfigService.secret,
             });
 
