@@ -9,4 +9,5 @@ export class AuthenticationConfigService {
     public readonly confirmTime = this.configService.getOrThrow<string>('CONFIRM_TIME');
     public readonly secret = this.configService.get<string>('JWT_SECRET');
     public readonly expiresIn = this.configService.get<string>('JWT_EXPIRE');
+    public readonly refreshTokenExpire = this.configService.getOrThrow<string>('REFRESH_TOKEN_EXPIRE');
 }

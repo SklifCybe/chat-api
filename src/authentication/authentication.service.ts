@@ -97,7 +97,7 @@ export class AuthenticationService {
         }
     }
 
-    public async signOut(refreshToken: string): Promise<Token> {
+    public async signOut(refreshToken: string): Promise<Token | null> {
         return this.tokensService.removeRefreshToken(refreshToken);
     }
 
@@ -176,7 +176,8 @@ export class AuthenticationService {
             return null;
         }
     }
-
+    
+    // todo: this method make double request to db for get token
     public async refreshTokens(refreshToken: string, userAgent: string): Promise<Tokens | null> {
         try {
             const token = await this.tokensService.getRefreshToken({ token: refreshToken });
@@ -194,6 +195,8 @@ export class AuthenticationService {
             const user = await this.userService.findOneById(token.userId);
 
             if (!user) {
+                // todo: maybe it BadRequestException or other
+                // todo: think about message
                 throw new UnauthorizedException(USER_HAS_BEEN_DELETED);
             }
 

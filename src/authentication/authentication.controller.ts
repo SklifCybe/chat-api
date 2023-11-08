@@ -14,12 +14,13 @@ import {
     HttpCode,
     Query,
     InternalServerErrorException,
+    Logger,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { AuthenticationService } from './authentication.service';
 import type { Tokens } from '../common/types/tokens.type';
-import { REFRESH_TOKEN, REFRESH_TOKEN_MAX_AGE } from '../common/constants/jwt.constant';
+import { REFRESH_TOKEN } from '../common/constants/jwt.constant';
 import { ApplicationConfigService } from '../config/application/config.service';
 import { Cookie } from '../common/decorators/cookie.decorator';
 import { UserAgent } from '../common/decorators/user-agent.decorator';
@@ -27,19 +28,24 @@ import { Public } from '../common/decorators/public.decorator';
 import { CodeExpiredResponse } from '../common/responses/code-expired.response';
 import { ConfirmDto } from './dto/confirm.dto';
 import { NewCodeDto } from './dto/new-code.dto';
+import { AuthenticationConfigService } from '../config/authentication/config.service';
 import { INCORRECT_DATA, INCORRECT_CODE_CONVERT } from '../common/constants/error-messages.constant';
 import { ApiSignUp } from '../swagger/decorators/api-sign-up.decorator';
 import { ApiSignIn } from '../swagger/decorators/api-sign-in.decorator';
 import { ApiConfirm } from '../swagger/decorators/api-confirm.decorator';
 import { ApiNewCode } from '../swagger/decorators/api-new-code.decorator';
 import { AccessTokenResponse } from '../common/responses/access-token.response';
+import { convertTime } from '../common/utils/convert-time';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthenticationController {
+    private readonly logger = new Logger();
+
     constructor(
         private readonly authenticationService: AuthenticationService,
         private readonly applicationConfigService: ApplicationConfigService,
+        private readonly authenticationConfigService: AuthenticationConfigService,
     ) {}
 
     @ApiSignUp()
@@ -132,6 +138,7 @@ export class AuthenticationController {
     }
 
     @ApiBearerAuth()
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('sign-out')
     public async signOut(
         @Cookie(REFRESH_TOKEN) refreshToken: string,
@@ -150,12 +157,19 @@ export class AuthenticationController {
         if (!tokens.refreshToken) {
             throw new UnauthorizedException();
         }
-        response.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
-            httpOnly: true,
-            sameSite: 'lax',
-            maxAge: REFRESH_TOKEN_MAX_AGE,
-            secure: this.applicationConfigService.isProduction,
-            path: '/',
-        });
+
+        try {
+            const maxAge = convertTime('milliseconds', this.authenticationConfigService.refreshTokenExpire);
+
+            response.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
+                httpOnly: true,
+                sameSite: 'lax',
+                maxAge,
+                secure: this.applicationConfigService.isProduction,
+                path: '/',
+            });
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 }

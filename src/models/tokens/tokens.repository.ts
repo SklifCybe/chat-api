@@ -1,53 +1,92 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { v4 } from 'uuid';
+import type { Token } from '@prisma/client';
 import { add } from 'date-fns';
 import { PrismaService } from '../prisma/prisma.service';
-import type { Token } from '@prisma/client';
+import { AuthenticationConfigService } from '../../config/authentication/config.service';
+import { parseTimeDuration } from '../../common/utils/parse-time-duration';
 
 @Injectable()
 export class TokensRepository {
-    constructor(private readonly prismaService: PrismaService) {}
+    private readonly logger = new Logger();
+
+    constructor(
+        private readonly prismaService: PrismaService,
+        private readonly authenticationConfigService: AuthenticationConfigService,
+    ) {}
 
     public async getRefreshToken({
         token,
         userId,
         userAgent,
     }: {
-        token: string | undefined;
+        token?: string;
         userId?: string;
         userAgent?: string;
     }): Promise<Token | null> {
-        return this.prismaService.token.findFirst({ where: { token, userId, userAgent } });
+        try {
+            return await this.prismaService.token.findFirst({ where: { token, userId, userAgent } });
+        } catch (error) {
+            this.logger.error(error);
+
+            return null;
+        }
     }
 
-    public async updateRefreshToken(token: string): Promise<Token> {
-        const newData = this.generateInfoForRefreshToken();
+    public async upsertRefreshToken(userId: string, userAgent: string): Promise<Token | null> {
+        try {
+            const refreshToken = await this.getRefreshToken({ userId, userAgent });
+            const tokenFields = this.generateInfoForRefreshToken();
+            // needed for creation if the token is not in the database
+            const INVALID_TOKEN = '';
 
-        return this.prismaService.token.update({ where: { token }, data: newData });
+            if (!tokenFields) {
+                throw new Error();
+            }
+
+            return await this.prismaService.token.upsert({
+                where: {
+                    token: refreshToken?.token ?? INVALID_TOKEN,
+                },
+                create: {
+                    ...tokenFields,
+                    userId,
+                    userAgent,
+                },
+                update: {
+                    ...tokenFields,
+                },
+            });
+        } catch (error) {
+            this.logger.error(error);
+
+            return null;
+        }
     }
 
-    public async createRefreshToken(userId: string, userAgent: string): Promise<Token> {
-        const { token, expired } = this.generateInfoForRefreshToken();
+    public async removeRefreshToken(refreshToken: string): Promise<Token | null> {
+        try {
+            return await this.prismaService.token.delete({ where: { token: refreshToken } });
+        } catch (error) {
+            this.logger.error(error);
 
-        return this.prismaService.token.create({
-            data: {
-                token,
-                expired,
-                userId,
-                userAgent,
-            },
-        });
+            return null;
+        }
     }
 
-    public async removeRefreshToken(refreshToken: string): Promise<Token> {
-        return this.prismaService.token.delete({ where: { token: refreshToken } });
-    }
+    private generateInfoForRefreshToken(): { token: string; expired: Date } | null {
+        try {
+            const refreshTokenExpire = this.authenticationConfigService.refreshTokenExpire;
+            const expiredDuration = parseTimeDuration(refreshTokenExpire);
 
-    private generateInfoForRefreshToken(): { token: string; expired: Date } {
-        return {
-            token: v4(),
-            // todo: expired should be .env file
-            expired: add(new Date(), { months: 1 }),
-        };
+            return {
+                token: v4(),
+                expired: add(new Date(), expiredDuration),
+            };
+        } catch (error) {
+            this.logger.error(error);
+
+            return null;
+        }
     }
 }

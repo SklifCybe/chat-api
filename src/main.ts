@@ -6,6 +6,7 @@ import { swaggerSetup } from './swagger/swagger-setup.swagger';
 import { AppModule } from './app.module';
 import { exceptionFactory } from './common/utils/exception-factory';
 
+// todo: refactor all application, change return format in async function. from return do.something, to return await do.something. Or return function result like const result = await do.something(); return result;
 // todo: think about change swagger config from json to yml
 // todo: 0000 it's code for all confirmation
 // todo: add backend app to docker
