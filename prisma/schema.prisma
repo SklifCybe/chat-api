@@ -9,14 +9,11 @@ datasource db {
 
 model User {
     id            String   @id @default(uuid())
-    // todo: add map to first_name
-    firstName     String
-    // todo: add map to last_name
-    lastName      String
+    firstName     String   @map("first_name")
+    lastName      String   @map("last_name")
     email         String   @unique
     avatarUrl     String?  @map("avatar_url")
-    // todo: add map to mail_confirmed
-    mailConfirmed Boolean  @default(false)
+    mailConfirmed Boolean  @default(false) @map("mail_confirmed")
     password      String
     createdAt     DateTime @default(now()) @map("created_at")
     updatedAt     DateTime @updatedAt @map("updated_at")
@@ -29,8 +26,7 @@ model Token {
     token     String   @unique
     expired   DateTime
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    // todo: add map to user_id
-    userId    String
+    userId    String   @map("user_id")
     userAgent String   @map("user_agent")
 
     @@map("tokens")
