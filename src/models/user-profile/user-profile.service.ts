@@ -15,6 +15,10 @@ export class UserProfileService {
         private readonly cloudinaryService: CloudinaryService,
     ) {}
 
+    public async getCurrentUser(userId: string): Promise<User | null> {
+        return this.userService.findOneById(userId);
+    }
+
     public async update(id: string, updateUserDto: UpdateUserDto, avatarFile: File): Promise<User | null> {
         if (isEmptyObject(updateUserDto, avatarFile)) {
             throw new BadRequestException(BODY_IS_EMPTY);

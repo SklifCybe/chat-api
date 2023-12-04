@@ -11,7 +11,7 @@ export const updateUserDto: UpdateUserDto = {
     lastName: 'Last',
     password: 'password',
 };
-export const updatedUser: User = {
+export const user: User = {
     createdAt: new Date(),
     updatedAt: new Date(),
     email: 'test@mail.com',
@@ -25,6 +25,7 @@ export const updatedUser: User = {
 export const mockUserProfileService = {
     update: jest.fn(),
     remove: jest.fn(),
+    getCurrentUser: jest.fn(),
 };
 export const jwtPayload: JwtPayload = {
     id: userId,

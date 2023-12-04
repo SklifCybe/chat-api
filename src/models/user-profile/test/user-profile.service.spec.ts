@@ -13,7 +13,7 @@ import { BODY_IS_EMPTY, FAILED_LOAD_AVATAR } from '../../../common/constants/err
 import {
     mockUserService,
     updateUserDto,
-    updatedUser,
+    user,
     userId,
     file,
     mockCloudinaryService,
@@ -41,6 +41,16 @@ describe('UserProfileService', () => {
         }).compile();
 
         userProfileService = moduleRef.get<UserProfileService>(UserProfileService);
+    });
+
+    describe('getCurrentUser', () => {
+        it('should call userService.findOneById with userId', async () => {
+            mockUserService.findOneById.mockImplementation(() => user);
+
+            await userProfileService.getCurrentUser(userId);
+
+            expect(mockUserService.findOneById).toHaveBeenCalledWith(userId);
+        });
     });
 
     describe('update', () => {
@@ -81,7 +91,7 @@ describe('UserProfileService', () => {
         });
 
         it('should call userService.update with correct arguments', async () => {
-            mockUserService.findOneById.mockImplementation(() => updatedUser);
+            mockUserService.findOneById.mockImplementation(() => user);
             mockCloudinaryService.uploadImage.mockImplementation(() => cloudinaryResponse);
 
             await userProfileService.update(userId, updateUserDto, file);
@@ -97,7 +107,7 @@ describe('UserProfileService', () => {
 
     describe('remove', () => {
         it('should call userService.remove with userId', async () => {
-            mockUserService.remove.mockImplementation(() => updatedUser);
+            mockUserService.remove.mockImplementation(() => user);
 
             await userProfileService.remove(userId);
 

@@ -10,7 +10,7 @@ export const updateUserDto: UpdateUserDto = {
     lastName: 'Last',
     password: 'password',
 };
-export const updatedUser: User = {
+export const user: User = {
     firstName: 'First',
     lastName: 'Last',
     password: 'password',

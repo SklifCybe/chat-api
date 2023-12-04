@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { CacheManagerModule } from '../../../models/cache-manager/cache-manager.module';
@@ -11,12 +11,12 @@ import { CacheManagerService } from '../../../models/cache-manager/cache-manager
 import { AuthenticationConfigService } from '../../../config/authentication/config.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserResponse } from '../../../common/responses/user.response';
-import { FAILED_UPDATE_USER, USER_DELETION_ERROR } from '../../../common/constants/error-messages.constant';
+import { FAILED_UPDATE_USER, USER_DELETION_ERROR, USER_NOT_FOUND } from '../../../common/constants/error-messages.constant';
 import { CloudinaryService } from '../../cloudinary/cloudinary.service';
 import {
     mockUserProfileService,
     updateUserDto,
-    updatedUser,
+    user,
     userId,
     jwtPayload,
     file,
@@ -43,21 +43,59 @@ describe('UserProfileController', () => {
         userProfileController = moduleRef.get<UserProfileController>(UserProfileController);
     });
 
-    describe('update', () => {
-        it('should call userProfileService.update with correct arguments', async () => {
-            mockUserProfileService.update.mockImplementation(() => updatedUser);
+    describe('getCurrentUser', () => {
+        it('should call getCurrentUser method with userId', async () => {
+            mockUserProfileService.getCurrentUser.mockImplementation(() => user);
 
-            await userProfileController.update(jwtPayload, updateUserDto, file);
+            await userProfileController.getCurrentUser(jwtPayload);
 
-            expect(mockUserProfileService.update).toHaveBeenLastCalledWith(userId, updateUserDto, file);
+            expect(mockUserProfileService.getCurrentUser).toHaveBeenCalledWith(jwtPayload.id);
+        });
+
+        it('should throw NotFoundException if user not found', async () => {
+            mockUserProfileService.getCurrentUser.mockImplementation(() => null);
+
+            try {
+                await userProfileController.getCurrentUser(jwtPayload);
+            } catch (error) {
+                expect(error).toBeInstanceOf(NotFoundException);
+            }
         });
 
         it('should return user instance of UserResponse', async () => {
-            mockUserProfileService.update.mockImplementation(() => updatedUser);
+            mockUserProfileService.getCurrentUser.mockImplementation(() => user);
 
-            const user = await userProfileController.update(jwtPayload, updateUserDto, file);
+            const currentUser = await userProfileController.getCurrentUser(jwtPayload);
 
-            expect(user).toBeInstanceOf(UserResponse);
+            expect(currentUser).toBeInstanceOf(UserResponse);
+        });
+
+        it('should have correct error message if user not found', async () => {
+            mockUserProfileService.getCurrentUser.mockImplementation(() => null);
+
+            try {
+                await userProfileController.getCurrentUser(jwtPayload);
+            } catch (error) {
+                expect(error.message).toBe(USER_NOT_FOUND);
+            }
+        });
+    });
+
+    describe('update', () => {
+        it('should call userProfileService.update with correct arguments', async () => {
+            mockUserProfileService.update.mockImplementation(() => user);
+
+            await userProfileController.update(jwtPayload, updateUserDto, file);
+            // todo: change to toHaveBeenCalledWith
+            expect(mockUserProfileService.update).toHaveBeenCalledWith(userId, updateUserDto, file);
+        });
+
+        it('should return user instance of UserResponse', async () => {
+            mockUserProfileService.update.mockImplementation(() => user);
+
+            const updatedUser = await userProfileController.update(jwtPayload, updateUserDto, file);
+
+            expect(updatedUser).toBeInstanceOf(UserResponse);
         });
 
         it('should throw BadRequestException if user not updated', async () => {
@@ -83,7 +121,7 @@ describe('UserProfileController', () => {
 
     describe('remove', () => {
         it('should call userProfileService.remove with correct arguments', async () => {
-            mockUserProfileService.remove.mockImplementation(() => updatedUser);
+            mockUserProfileService.remove.mockImplementation(() => user);
 
             await userProfileController.remove(jwtPayload);
 
@@ -91,7 +129,7 @@ describe('UserProfileController', () => {
         });
 
         it('should return void', async () => {
-            mockUserProfileService.remove.mockImplementation(() => updatedUser);
+            mockUserProfileService.remove.mockImplementation(() => user);
 
             const result = await userProfileController.remove(jwtPayload);
 

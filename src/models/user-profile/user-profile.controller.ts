@@ -1,4 +1,5 @@
 import {
+    Get,
     Controller,
     Patch,
     Delete,
@@ -10,12 +11,17 @@ import {
     HttpStatus,
     UploadedFile,
     UsePipes,
+    NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserProfileService } from './user-profile.service';
 import { UserResponse } from '../../common/responses/user.response';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FAILED_UPDATE_USER, USER_DELETION_ERROR } from '../../common/constants/error-messages.constant';
+import {
+    FAILED_UPDATE_USER,
+    USER_DELETION_ERROR,
+    USER_NOT_FOUND,
+} from '../../common/constants/error-messages.constant';
 import { ApiUserUpdate } from '../../swagger/decorators/api-user-update.decorator';
 import { ApiRemoveUser } from '../../swagger/decorators/api-remove-user.decorator';
 import { User } from '../../common/decorators/user.decorator';
@@ -23,12 +29,26 @@ import { JwtPayload } from '../../common/types/jwt.type';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileValidationPipe } from '../../common/pipes/file-validation.pipe';
 import { File } from '../../common/types/file.type';
+import { ApiGetCurrentUser } from '../../swagger/decorators/api-get-current-user.decorator';
 
 @ApiBearerAuth()
 @ApiTags('User Profile')
 @Controller('user-profile')
 export class UserProfileController {
     constructor(private readonly userProfileService: UserProfileService) {}
+
+    @ApiGetCurrentUser()
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get()
+    public async getCurrentUser(@User() user: JwtPayload): Promise<UserResponse> {
+        const currentUser = await this.userProfileService.getCurrentUser(user.id);
+
+        if (!currentUser) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
+
+        return new UserResponse(currentUser);
+    }
 
     @ApiUserUpdate()
     @UsePipes(FileValidationPipe)
