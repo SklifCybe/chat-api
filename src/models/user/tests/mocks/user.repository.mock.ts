@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
 import type { UpdateUserFields } from 'src/common/types/configuration-user.type';
-// todo: create one folder, then have all mocks from all project
+// todo: create one folder, then have all mocks from all project or use local mocks in test files
 
 const firstName = 'First';
 const lastName = 'Last';

@@ -71,7 +71,7 @@ export class AuthenticationService {
             const user = await this.userService.findOneByEmail(signInDto.email);
 
             if (!user) {
-                // todo: change to user not registered
+                // todo: maybe change message to user not registered
                 throw new UnauthorizedException(WRONG_EMAIL_OR_PASSWORD);
             }
 

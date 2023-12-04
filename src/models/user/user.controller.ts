@@ -14,7 +14,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtPayload } from '../../common/types/jwt.type';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
-// todo: add unit test to user.controller.ts
+// todo: remove this controller
 @ApiBearerAuth()
 @ApiTags('User')
 @Controller('user')

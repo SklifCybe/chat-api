@@ -36,7 +36,6 @@ export class UserRepository {
         }
 
         try {
-            // todo: check user.findFirst throw or not exception
             const foundUser = await this.prismaService.user.findFirst({
                 where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] },
             });
@@ -46,6 +45,7 @@ export class UserRepository {
             return foundUser;
         } catch (error) {
             this.logger.error(error);
+
             return null;
         }
     }
