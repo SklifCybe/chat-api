@@ -2,7 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 export const swaggerSetup = (application: INestApplication) => {
-    // todo: add host
+    // todo: add host. after check correct in local and production build
     const config = new DocumentBuilder()
         .setTitle('Chat Api')
         .setDescription('Created by Ilya Strelkovskiy')
