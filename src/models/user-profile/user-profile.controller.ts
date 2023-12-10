@@ -57,7 +57,7 @@ export class UserProfileController {
     public async update(
         @User() user: JwtPayload,
         @Body() updateUserDto: UpdateUserDto,
-        @UploadedFile() file: File,
+        @UploadedFile() file?: File,
     ): Promise<UserResponse> {
         const updatedUser = await this.userProfileService.update(user.id, updateUserDto, file);
 

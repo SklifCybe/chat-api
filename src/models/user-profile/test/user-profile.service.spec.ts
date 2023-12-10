@@ -62,6 +62,12 @@ describe('UserProfileService', () => {
             }
         });
 
+        it('should call userService.update without avatarFile', async () => {
+            await userProfileService.update(userId, updateUserDto);
+
+            expect(mockUserService.update).toHaveBeenCalledWith(userId, updateUserDto);
+        });
+
         it('should have correct message in BadRequestException if dto is empty', async () => {
             try {
                 await userProfileService.update(userId, {}, {} as File);

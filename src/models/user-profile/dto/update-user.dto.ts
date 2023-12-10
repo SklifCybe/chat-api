@@ -23,5 +23,8 @@ export class UpdateUserDto {
 
     @ApiPropertyOptional({ type: 'file' })
     @IsOptional()
+    // todo: add validation for file. should create custom decorator something like this
+    // https://stackoverflow.com/questions/60680641/is-there-any-way-to-implement-validation-for-file-upload-using-class-validator
+    // maybe else
     public readonly file?: File
 }

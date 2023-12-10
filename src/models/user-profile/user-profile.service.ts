@@ -19,9 +19,13 @@ export class UserProfileService {
         return this.userService.findOneById(userId);
     }
 
-    public async update(id: string, updateUserDto: UpdateUserDto, avatarFile: File): Promise<User | null> {
+    public async update(id: string, updateUserDto: UpdateUserDto, avatarFile?: File): Promise<User | null> {
         if (isEmptyObject(updateUserDto, avatarFile)) {
             throw new BadRequestException(BODY_IS_EMPTY);
+        }
+
+        if (!avatarFile) {
+            return this.userService.update(id, updateUserDto);
         }
 
         const avatarImage = await this.cloudinaryService.uploadImage(avatarFile);
