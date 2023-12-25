@@ -13,6 +13,7 @@ export const updateUserDto: UpdateUserDto = {
 export const user: User = {
     firstName: 'First',
     lastName: 'Last',
+    userName: 'Sklif',
     password: 'password',
     avatarUrl: null,
     createdAt: new Date(),

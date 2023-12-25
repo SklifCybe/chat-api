@@ -32,4 +32,9 @@ export class SignUpDto {
     @MinLength(6)
     @Validate(IsPasswordsMatchingConstrains)
     public readonly confirmPassword: string;
+
+    @ApiProperty({ minLength: 3, maxLength: 15, example: 'sklif' })
+    @IsString()
+    @Length(3, 15)
+    public readonly userName: string;
 }

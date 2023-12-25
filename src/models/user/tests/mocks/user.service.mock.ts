@@ -14,6 +14,7 @@ export const mockSignUpDto: SignUpDto = {
     password,
     firstName,
     lastName,
+    userName: 'Sklif',
     confirmPassword: password,
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

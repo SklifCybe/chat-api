@@ -9,6 +9,7 @@ export const mockUserArguments = {
     data: {
         firstName,
         lastName,
+        userName: 'Sklif',
         email: 'test@mail.ru',
         password: '123456',
     },

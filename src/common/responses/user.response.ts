@@ -12,6 +12,9 @@ export class UserResponse implements User {
     @ApiProperty({ example: 'Strelkovskiy' })
     lastName: string;
 
+    @ApiProperty({ example: 'Sklif' })
+    userName: string;
+
     @ApiProperty({ example: 'i.s.toaccept@gmail.com' })
     email: string;
 
@@ -30,7 +33,7 @@ export class UserResponse implements User {
     @Exclude()
     createdAt: Date;
 
-    constructor(user: Partial<User>) {
+    constructor(user: User) {
         Object.assign(this, user);
     }
 }

@@ -11,14 +11,14 @@ export class UserService {
     constructor(private readonly userRepository: UserRepository) {}
 
     public async create(createUserDto: SignUpDto): Promise<User | null> {
-        const { email, password, firstName, lastName } = createUserDto;
+        const { email, password, firstName, lastName, userName } = createUserDto;
         const hashedPassword = await this.hashPassword(password);
 
         if (hashedPassword === null) {
             return null;
         }
 
-        return this.userRepository.create(firstName, lastName, email, hashedPassword);
+        return this.userRepository.create(firstName, lastName, userName, email, hashedPassword);
     }
 
     public async findOneById(id: string): Promise<User | null> {

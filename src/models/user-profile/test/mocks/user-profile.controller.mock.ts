@@ -18,6 +18,7 @@ export const user: User = {
     avatarUrl: null,
     firstName: 'First',
     lastName: 'Last',
+    userName: 'Sklif',
     id: userId,
     mailConfirmed: true,
     password: 'some-password',
