@@ -1,14 +1,32 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { hash, genSalt } from 'bcrypt';
 import type { User } from '@prisma/client';
 import { UserRepository } from './user.repository';
 import type { SignUpDto } from '../../authentication/dto/sign-up.dto';
 import type { UpdateUserFields } from '../../common/types/configuration-user.type';
+import type { PageOptionsDto } from '../../common/dtos/page-options.dto';
+import { PageMetaDto } from '../../common/dtos/page-meta-dto';
 
 @Injectable()
 export class UserService {
     private readonly logger = new Logger(UserService.name);
     constructor(private readonly userRepository: UserRepository) {}
+
+    public async getAll(pageOptionsDto: PageOptionsDto): Promise<[User[], PageMetaDto]> {
+        const { limit, orderBy, page, searchBy, searchText } = pageOptionsDto;
+        const offset = (page - 1) * limit;
+
+        const data = await this.userRepository.findMany(orderBy, offset, limit, searchBy, searchText);
+        const total = await this.userRepository.count();
+
+        if (!data || !total) {
+            throw new BadRequestException();
+        }
+
+        const meta = new PageMetaDto({ limit, offset, page, total });
+
+        return [data, meta];
+    }
 
     public async create(createUserDto: SignUpDto): Promise<User | null> {
         const { email, password, firstName, lastName, userName } = createUserDto;

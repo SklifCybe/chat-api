@@ -17,6 +17,9 @@ import {
     updateFields,
     userUpdated,
 } from './mocks/user.repository.mock';
+import { Order } from '../../../common/constants/order.constant';
+import { UserSearchBy } from '../../../common/constants/user-search-by.constant';
+import type { User } from '@prisma/client';
 
 describe('UserRepository', () => {
     let userRepository: UserRepository;
@@ -36,11 +39,89 @@ describe('UserRepository', () => {
         userRepository = moduleRef.get<UserRepository>(UserRepository);
     });
 
+    describe('findMany', () => {
+        it('should return users on success', async () => {
+            const mockUsers: User[] = [
+                {
+                    avatarUrl: null,
+                    createdAt: new Date(),
+                    email: 'test@gmail.com',
+                    firstName: 'Ilya',
+                    lastName: 'Strelkovskiy',
+                    id: 'id',
+                    mailConfirmed: true,
+                    password: 'password',
+                    updatedAt: new Date(),
+                    userName: 'sklif',
+                },
+            ];
+
+            mockPrismaService.user.findMany.mockResolvedValueOnce(mockUsers);
+
+            const result = await userRepository.findMany(Order.Asc, 0, 10, UserSearchBy.UserName);
+
+            expect(result).toEqual(mockUsers);
+        });
+
+        it('should call prismaService.user.findMany with correct arguments', async () => {
+            const orderBy = Order.Asc;
+            const offset = 0;
+            const limit = 10;
+            const searchBy = UserSearchBy.UserName;
+            const searchText = 'hello';
+            const mockUsers: User[] = [
+                {
+                    avatarUrl: null,
+                    createdAt: new Date(),
+                    email: 'test@gmail.com',
+                    firstName: 'Ilya',
+                    lastName: 'Strelkovskiy',
+                    id: 'id',
+                    mailConfirmed: true,
+                    password: 'password',
+                    updatedAt: new Date(),
+                    userName: 'sklif',
+                },
+            ];
+            const received = {
+                orderBy: {
+                    userName: orderBy,
+                },
+                skip: offset,
+                take: limit,
+                where: {
+                    [searchBy]: {
+                        contains: searchText,
+                        mode: 'insensitive',
+                    },
+                },
+            };
+
+            mockPrismaService.user.findMany.mockResolvedValueOnce(mockUsers);
+
+            await userRepository.findMany(orderBy, offset, limit, searchBy, searchText);
+
+            expect(mockPrismaService.user.findMany).toHaveBeenCalledWith(received);
+        });
+
+        it('should return null on failure', async () => {
+            jest.spyOn(mockPrismaService.user, 'findMany').mockImplementation(
+                jest.fn(() => {
+                    throw new Error();
+                }),
+            );
+
+            const result = await userRepository.findMany(Order.Asc, 0, 10, UserSearchBy.UserName);
+
+            expect(result).toBeNull();
+        });
+    });
+
     describe('create', () => {
         it('should create user', async () => {
             mockPrismaService.user.create.mockResolvedValue(mockUserCreated);
-            const { email, firstName, lastName, password } = mockUserArguments.data;
-            const user = await userRepository.create(firstName, lastName, email, password);
+            const { email, firstName, lastName, password, userName } = mockUserArguments.data;
+            const user = await userRepository.create(firstName, lastName, userName, email, password);
 
             expect(user).toEqual(mockUserCreated);
         });
@@ -51,16 +132,16 @@ describe('UserRepository', () => {
                     throw new Error();
                 }),
             );
-            const { email, firstName, lastName, password } = mockUserArguments.data;
-            const user = await userRepository.create(firstName, lastName, email, password);
+            const { email, firstName, lastName, password, userName } = mockUserArguments.data;
+            const user = await userRepository.create(firstName, lastName, userName, email, password);
 
             expect(user).toBeNull();
         });
 
         it('should call create function with correct arguments', async () => {
-            const { email, firstName, lastName, password } = mockUserArguments.data;
+            const { email, firstName, lastName, password, userName } = mockUserArguments.data;
 
-            await userRepository.create(firstName, lastName, email, password);
+            await userRepository.create(firstName, lastName, userName, email, password);
 
             expect(mockPrismaService.user.create).toHaveBeenCalledWith(mockUserArguments);
         });

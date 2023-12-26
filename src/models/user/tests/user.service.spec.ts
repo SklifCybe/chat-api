@@ -17,6 +17,12 @@ import {
     mockUpdateFieldsWithPassword,
 } from './mocks/user.service.mock';
 import type { UpdateUserFields } from '../../../common/types/configuration-user.type';
+import type { PageOptionsDto } from '../../../common/dtos/page-options.dto';
+import { Order } from '../../../common/constants/order.constant';
+import { UserSearchBy } from '../../../common/constants/user-search-by.constant';
+import type { User } from '@prisma/client';
+import type { PageMetaDto } from '../../../common/dtos/page-meta-dto';
+import { BadRequestException } from '@nestjs/common';
 
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => hashedPassword),
@@ -40,6 +46,121 @@ describe('UserService', () => {
         userService = moduleRef.get<UserService>(UserService);
     });
 
+    describe('getAll', () => {
+        it('should return data and meta on success', async () => {
+            const pageOptionsDto: PageOptionsDto = {
+                limit: 10,
+                orderBy: Order.Asc,
+                page: 1,
+                searchBy: UserSearchBy.Email,
+                searchText: '@gmail.com',
+            };
+            const mockUsers: User[] = [
+                {
+                    avatarUrl: null,
+                    createdAt: new Date(),
+                    email: 'test@gmail.com',
+                    firstName: 'Ilya',
+                    lastName: 'Strelkovskiy',
+                    id: 'id',
+                    mailConfirmed: true,
+                    password: 'password',
+                    updatedAt: new Date(),
+                    userName: 'sklif',
+                },
+            ];
+            const mockTotal = 1;
+            const received: [User[], PageMetaDto] = [
+                mockUsers,
+                {
+                    limit: pageOptionsDto.limit,
+                    offset: 0,
+                    page: pageOptionsDto.page,
+                    total: mockTotal,
+                },
+            ];
+
+            mockUserRepository.findMany.mockResolvedValueOnce(mockUsers);
+            mockUserRepository.count.mockResolvedValueOnce(mockTotal);
+
+            const result = await userService.getAll(pageOptionsDto);
+
+            expect(result).toEqual(received);
+        });
+
+        it('should throw BadRequestException if findMany return null', async () => {
+            const pageOptionsDto: PageOptionsDto = {
+                limit: 10,
+                orderBy: Order.Asc,
+                page: 1,
+                searchBy: UserSearchBy.Email,
+                searchText: '@gmail.com',
+            };
+            const mockTotal = 1;
+
+            mockUserRepository.findMany.mockResolvedValueOnce(null);
+            mockUserRepository.count.mockResolvedValueOnce(mockTotal);
+
+            try {
+                await userService.getAll(pageOptionsDto);
+            } catch (error) {
+                expect(error).toBeInstanceOf(BadRequestException);
+            }
+        });
+
+        it('should throw BadRequestException if count return null', async () => {
+            const pageOptionsDto: PageOptionsDto = {
+                limit: 10,
+                orderBy: Order.Asc,
+                page: 1,
+                searchBy: UserSearchBy.Email,
+                searchText: '@gmail.com',
+            };
+            const mockUsers: User[] = [
+                {
+                    avatarUrl: null,
+                    createdAt: new Date(),
+                    email: 'test@gmail.com',
+                    firstName: 'Ilya',
+                    lastName: 'Strelkovskiy',
+                    id: 'id',
+                    mailConfirmed: true,
+                    password: 'password',
+                    updatedAt: new Date(),
+                    userName: 'sklif',
+                },
+            ];
+
+            mockUserRepository.findMany.mockResolvedValueOnce(mockUsers);
+            mockUserRepository.count.mockResolvedValueOnce(null);
+
+            try {
+                await userService.getAll(pageOptionsDto);
+            } catch (error) {
+                expect(error).toBeInstanceOf(BadRequestException);
+            }
+        });
+
+        it('should throw BadRequestException if findMany and count return null', async () => {
+            const pageOptionsDto: PageOptionsDto = {
+                limit: 10,
+                orderBy: Order.Asc,
+                page: 1,
+                searchBy: UserSearchBy.Email,
+                searchText: '@gmail.com',
+            };
+
+            mockUserRepository.findMany.mockResolvedValueOnce(null);
+            mockUserRepository.count.mockResolvedValueOnce(null);
+
+            try {
+                await userService.getAll(pageOptionsDto);
+            } catch (error) {
+                expect(error).toBeInstanceOf(BadRequestException);
+            }
+        });
+    });
+
     describe('create', () => {
         mockUserRepository.create.mockResolvedValue(mockUserReturn);
 
@@ -58,10 +179,16 @@ describe('UserService', () => {
         });
 
         it('method create from userRepository should be called with correct arguments', () => {
-            const { firstName, lastName, email } = mockSignUpDto;
+            const { firstName, lastName, userName, email } = mockSignUpDto;
             const { password: hashedPassword } = mockUserReturn;
 
-            expect(mockUserRepository.create).toHaveBeenCalledWith(firstName, lastName, email, hashedPassword);
+            expect(mockUserRepository.create).toHaveBeenCalledWith(
+                firstName,
+                lastName,
+                userName,
+                email,
+                hashedPassword,
+            );
         });
 
         it('should return null if hashPassword return null', async () => {

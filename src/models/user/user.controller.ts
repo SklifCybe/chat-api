@@ -1,54 +1,32 @@
 import {
     Controller,
-    Param,
     Get,
-    Delete,
-    ParseUUIDPipe,
+    Query,
     UseInterceptors,
     ClassSerializerInterceptor,
-    ForbiddenException,
 } from '@nestjs/common';
-import { UserResponse } from '../../common/responses/user.response';
+import type { UserResponse } from '../../common/responses/user.response';
 import { UserService } from './user.service';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtPayload } from '../../common/types/jwt.type';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { PageOptionsDto } from '../../common/dtos/page-options.dto';
+import { PageResponse } from '../../common/responses/page.response';
+import { UserListResponse } from '../../common/responses/user-list.response';
+import { ApiGetAllUsers } from '../../swagger/decorators/api-get-all-users.decorator';
 
-// todo: remove this controller
 @ApiBearerAuth()
 @ApiTags('User')
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
+    @ApiGetAllUsers()
+    @Get('all')
     @UseInterceptors(ClassSerializerInterceptor)
-    @Get(':id')
-    public async findOneById(@Param('id', ParseUUIDPipe) id: string): Promise<UserResponse | null> {
-        const user = await this.userService.findOneById(id);
+    public async getAll(@Query() pageOptionsDto: PageOptionsDto): Promise<PageResponse<UserResponse>> {
+        const [data, meta] = await this.userService.getAll(pageOptionsDto);
 
-        if (!user) {
-            return null;
-        }
+        const userList = new UserListResponse(data);
 
-        return new UserResponse(user);
-    }
-
-    @UseInterceptors(ClassSerializerInterceptor)
-    @Delete(':id')
-    public async remove(
-        @Param('id', ParseUUIDPipe) id: string,
-        @CurrentUser() userJwtPayload: JwtPayload,
-    ): Promise<UserResponse | null> {
-        if (id !== userJwtPayload.id) {
-            throw new ForbiddenException();
-        }
-
-        const user = await this.userService.remove(id);
-
-        if (!user) {
-            return null;
-        }
-
-        return new UserResponse(user);
+        return new PageResponse(userList.users, meta);
     }
 }

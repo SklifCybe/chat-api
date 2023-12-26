@@ -32,6 +32,8 @@ export const mockPrismaService = {
         findFirst: jest.fn(),
         delete: jest.fn(),
         update: jest.fn(),
+        findMany: jest.fn(),
+        count: jest.fn(),
     },
 };
 export const mockCacheManagerService = {

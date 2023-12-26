@@ -34,6 +34,8 @@ export const mockUserRepository = {
     remove: jest.fn(),
     confirm: jest.fn(),
     update: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
 };
 export const mockUserUpdateFields: UpdateUserFields = {
     firstName,
