@@ -19,11 +19,14 @@ model User {
     createdAt     DateTime @default(now()) @map("created_at")
     updatedAt     DateTime @updatedAt @map("updated_at")
     token         Token[]
+    contacts      User[]   @relation("Contacts")
+    contactsBy    User[]   @relation("Contacts")
 
     @@map("users")
 }
 
 model Token {
+    // todo: maybe create default uuid. now generates in code
     token     String   @unique
     expired   DateTime
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

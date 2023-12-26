@@ -31,8 +31,11 @@ export class UserRepository {
                 where: {
                     [searchBy]: {
                         contains: searchText,
-                        mode: 'insensitive'
+                        mode: 'insensitive',
                     },
+                },
+                include: {
+                    contacts: true,
                 },
             });
         } catch (error) {
@@ -68,6 +71,9 @@ export class UserRepository {
         try {
             const foundUser = await this.prismaService.user.findFirst({
                 where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] },
+                include: {
+                    contacts: true,
+                },
             });
 
             await this.cacheManagerService.set(idOrEmail, foundUser);

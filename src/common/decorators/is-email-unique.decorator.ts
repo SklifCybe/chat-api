@@ -4,6 +4,7 @@ import type { ValidatorConstraintInterface, ValidationOptions } from 'class-vali
 import { emailExistError } from '../helpers/error-message.helper';
 import { UserService } from '../../models/user/user.service';
 
+// todo: create new or modify this decorator for check uniq in userName field
 @Injectable()
 @ValidatorConstraint({ name: 'IsEmailUnique', async: true })
 export class IsEmailUniqueValidate implements ValidatorConstraintInterface {
