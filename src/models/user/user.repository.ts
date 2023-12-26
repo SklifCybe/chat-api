@@ -54,6 +54,9 @@ export class UserRepository {
         try {
             return this.prismaService.user.create({
                 data: { firstName, lastName, userName, email, password: hashedPassword },
+                include: {
+                    contacts: true,
+                },
             });
         } catch (error) {
             this.logger.error(error);
@@ -89,7 +92,7 @@ export class UserRepository {
     public async remove(id: string): Promise<User | null> {
         try {
             // todo: check user.delete throw or not exception
-            const user = await this.prismaService.user.delete({ where: { id } });
+            const user = await this.prismaService.user.delete({ where: { id }, include: { contacts: true } });
 
             await Promise.allSettled([this.cacheManagerService.del(user.id), this.cacheManagerService.del(user.email)]);
 
@@ -102,7 +105,11 @@ export class UserRepository {
 
     public async confirm(id: string): Promise<User | null> {
         try {
-            return this.prismaService.user.update({ where: { id }, data: { mailConfirmed: true } });
+            return this.prismaService.user.update({
+                where: { id },
+                data: { mailConfirmed: true },
+                include: { contacts: true },
+            });
         } catch (error) {
             this.logger.error(error);
             return null;
@@ -111,7 +118,7 @@ export class UserRepository {
 
     public async update(id: string, updateFields: UpdateUserFields): Promise<User | null> {
         try {
-            return this.prismaService.user.update({ where: { id }, data: updateFields });
+            return this.prismaService.user.update({ where: { id }, data: updateFields, include: { contacts: true } });
         } catch (error) {
             this.logger.error(error);
 
