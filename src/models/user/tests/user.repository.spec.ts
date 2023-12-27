@@ -20,13 +20,19 @@ import {
 import { Order } from '../../../common/constants/order.constant';
 import { UserSearchBy } from '../../../common/constants/user-search-by.constant';
 import type { User } from '@prisma/client';
+import { CloudinaryModule } from '../../../models/cloudinary/cloudinary.module';
 
 describe('UserRepository', () => {
     let userRepository: UserRepository;
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [CacheManagerModule, RedisProviderModule, ConfigModule.forRoot({ isGlobal: true })],
+            imports: [
+                CacheManagerModule,
+                RedisProviderModule,
+                ConfigModule.forRoot({ isGlobal: true }),
+                CloudinaryModule,
+            ],
             providers: [
                 UserService,
                 UserRepository,
@@ -43,7 +49,7 @@ describe('UserRepository', () => {
         it('should return users on success', async () => {
             const mockUsers: User[] = [
                 {
-                    avatarUrl: null,
+                    avatarUrl: 'http://avatar.png',
                     createdAt: new Date(),
                     email: 'test@gmail.com',
                     firstName: 'Ilya',
@@ -71,7 +77,7 @@ describe('UserRepository', () => {
             const searchText = 'hello';
             const mockUsers: User[] = [
                 {
-                    avatarUrl: null,
+                    avatarUrl: 'http://avatar.png',
                     createdAt: new Date(),
                     email: 'test@gmail.com',
                     firstName: 'Ilya',
@@ -95,6 +101,9 @@ describe('UserRepository', () => {
                         mode: 'insensitive',
                     },
                 },
+                include: {
+                    contacts: true,
+                }
             };
 
             mockPrismaService.user.findMany.mockResolvedValueOnce(mockUsers);
@@ -120,8 +129,8 @@ describe('UserRepository', () => {
     describe('create', () => {
         it('should create user', async () => {
             mockPrismaService.user.create.mockResolvedValue(mockUserCreated);
-            const { email, firstName, lastName, password, userName } = mockUserArguments.data;
-            const user = await userRepository.create(firstName, lastName, userName, email, password);
+            const { email, firstName, lastName, password, userName, avatarUrl } = mockUserArguments.data;
+            const user = await userRepository.create(firstName, lastName, userName, email, password, avatarUrl);
 
             expect(user).toEqual(mockUserCreated);
         });
@@ -132,16 +141,16 @@ describe('UserRepository', () => {
                     throw new Error();
                 }),
             );
-            const { email, firstName, lastName, password, userName } = mockUserArguments.data;
-            const user = await userRepository.create(firstName, lastName, userName, email, password);
+            const { email, firstName, lastName, password, userName, avatarUrl } = mockUserArguments.data;
+            const user = await userRepository.create(firstName, lastName, userName, email, password, avatarUrl);
 
             expect(user).toBeNull();
         });
 
         it('should call create function with correct arguments', async () => {
-            const { email, firstName, lastName, password, userName } = mockUserArguments.data;
+            const { email, firstName, lastName, password, userName, avatarUrl } = mockUserArguments.data;
 
-            await userRepository.create(firstName, lastName, userName, email, password);
+            await userRepository.create(firstName, lastName, userName, email, password, avatarUrl);
 
             expect(mockPrismaService.user.create).toHaveBeenCalledWith(mockUserArguments);
         });
@@ -174,7 +183,10 @@ describe('UserRepository', () => {
             mockCacheManagerService.get.mockImplementation(() => null);
 
             const received = {
-                where: { OR: [{ id: mockUserCreated.id }, { email: mockUserCreated.id }] },
+                where: {
+                    OR: [{ id: mockUserCreated.id }, { email: mockUserCreated.id }],
+                },
+                include: { contacts: true },
             };
 
             await userRepository.findOne(mockUserCreated.id);
@@ -208,7 +220,7 @@ describe('UserRepository', () => {
         it('should call delete method with correct arguments', async () => {
             await userRepository.remove(mockUserCreated.id);
 
-            const received = { where: { id: mockUserCreated.id } };
+            const received = { where: { id: mockUserCreated.id }, include: { contacts: true } };
 
             expect(mockPrismaService.user.delete).toHaveBeenCalledWith(received);
         });
@@ -258,7 +270,11 @@ describe('UserRepository', () => {
         it('should call update method with correct arguments', async () => {
             await userRepository.confirm(mockUserCreated.email);
 
-            const received = { where: { id: mockUserCreated.id }, data: { mailConfirmed: true } };
+            const received = {
+                where: { id: mockUserCreated.id },
+                data: { mailConfirmed: true },
+                include: { contacts: true },
+            };
 
             expect(mockPrismaService.user.update).toHaveBeenCalledWith(received);
         });
@@ -288,7 +304,7 @@ describe('UserRepository', () => {
         it('should call update method with correct arguments', async () => {
             await userRepository.update(userId, updateFields);
 
-            const received = { where: { id: userId }, data: updateFields };
+            const received = { where: { id: userId }, data: updateFields, include: { contacts: true } };
 
             expect(mockPrismaService.user.update).toHaveBeenCalledWith(received);
         });

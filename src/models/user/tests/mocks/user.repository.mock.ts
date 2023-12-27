@@ -12,12 +12,16 @@ export const mockUserArguments = {
         userName: 'Sklif',
         email: 'test@mail.ru',
         password: '123456',
+        avatarUrl: 'http://avatar.png',
     },
+    include: {
+        contacts: true
+    }
 };
 export const mockUserCreated: User = {
     ...mockUserArguments.data,
     mailConfirmed: false,
-    avatarUrl: null,
+    avatarUrl: 'http://avatar.png',
     createdAt: new Date(),
     updatedAt: new Date(),
     id: userId,

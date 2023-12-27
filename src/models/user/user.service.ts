@@ -6,11 +6,15 @@ import type { SignUpDto } from '../../authentication/dto/sign-up.dto';
 import type { UpdateUserFields } from '../../common/types/configuration-user.type';
 import type { PageOptionsDto } from '../../common/dtos/page-options.dto';
 import { PageMetaDto } from '../../common/dtos/page-meta-dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
     private readonly logger = new Logger(UserService.name);
-    constructor(private readonly userRepository: UserRepository) {}
+    constructor(
+        private readonly userRepository: UserRepository,
+        private readonly cloudinaryService: CloudinaryService,
+    ) {}
 
     public async getAll(pageOptionsDto: PageOptionsDto): Promise<[User[], PageMetaDto]> {
         const { limit, orderBy, page, searchBy, searchText } = pageOptionsDto;
@@ -32,11 +36,13 @@ export class UserService {
         const { email, password, firstName, lastName, userName } = createUserDto;
         const hashedPassword = await this.hashPassword(password);
 
-        if (hashedPassword === null) {
+        const avatarUrl = await this.cloudinaryService.getDefaultAvatarUrl();
+
+        if (hashedPassword === null || avatarUrl === null) {
             return null;
         }
 
-        return this.userRepository.create(firstName, lastName, userName, email, hashedPassword);
+        return this.userRepository.create(firstName, lastName, userName, email, hashedPassword, avatarUrl);
     }
 
     public async findOneById(id: string): Promise<User | null> {

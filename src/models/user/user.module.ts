@@ -5,9 +5,10 @@ import { UserController } from './user.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheManagerService } from '../cache-manager/cache-manager.service';
 import { AuthenticationConfigService } from '../../config/authentication/config.service';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
-    imports: [],
+    imports: [CloudinaryModule],
     providers: [UserService, UserRepository, CacheManagerService, AuthenticationConfigService, PrismaService],
     controllers: [UserController],
     exports: [UserService],

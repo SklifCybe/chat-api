@@ -42,3 +42,42 @@ export const file: File = {
     path: '/',
     stream: new Readable(),
 };
+export const mockCloudinaryResources = {
+    resources: [
+        {
+            asset_id: 'ec832bc8a8573d0eb2fd23ab7b2ca787',
+            public_id: 'default_avatars/dm8bzdvovql0w1bgragf',
+            format: 'png',
+            version: 1703625408,
+            resource_type: 'image',
+            type: 'private',
+            created_at: '2023-12-26T21:16:48Z',
+            bytes: 1739445,
+            width: 1024,
+            height: 1024,
+            folder: 'default_avatars',
+            url: 'http://res.cloudinary.com/dyfochejl/image/private/s--0Svk5duW--/v1703625408/default_avatars/dm8bzdvovql0w1bgragf.png',
+            secure_url:
+                'https://res.cloudinary.com/dyfochejl/image/private/s--0Svk5duW--/v1703625408/default_avatars/dm8bzdvovql0w1bgragf.png',
+        },
+        {
+            asset_id: 'ec832bc8a8573d0eb2fd23ab7b2ca787',
+            public_id: 'default_avatars/dm8bzdvovql0w1bgragf',
+            format: 'png',
+            version: 1703625408,
+            resource_type: 'image',
+            type: 'private',
+            created_at: '2023-12-26T21:16:48Z',
+            bytes: 1739445,
+            width: 1024,
+            height: 1024,
+            folder: 'default_avatars',
+            url: 'http://res.cloudinary.com/dyfochejl/image/private/s--0Svk5duW--/v1703625408/default_avatars/dm8bzdvovql0w1bgragf.png',
+            secure_url:
+                'https://res.cloudinary.com/dyfochejl/image/private/s--0Svk5duW--/v1703625408/default_avatars/dm8bzdvovql0w1bgragf.png',
+        },
+    ],
+    rate_limit_allowed: 500,
+    rate_limit_reset_at: '2023-12-27T11:00:00.000Z',
+    rate_limit_remaining: 494,
+};

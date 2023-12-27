@@ -15,7 +15,7 @@ export const user: User = {
     lastName: 'Last',
     userName: 'Sklif',
     password: 'password',
-    avatarUrl: null,
+    avatarUrl: 'http://avatar.png',
     createdAt: new Date(),
     updatedAt: new Date(),
     email: 'test@mail.com',

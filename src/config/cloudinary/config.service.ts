@@ -9,4 +9,7 @@ export class CloudinaryConfigService {
     public readonly name = this.configService.get<string>('CLOUDINARY_NAME');
     public readonly apiKey = this.configService.get<string>('CLOUDINARY_API_KEY');
     public readonly apiSecret = this.configService.get<string>('CLOUDINARY_API_SECRET');
+    public readonly maxDefaultImages = Number(
+        this.configService.get<string>('CLOUDINARY_API_MAX_DEFAULT_IMAGES', '15'),
+    );
 }

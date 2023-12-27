@@ -23,7 +23,7 @@ export const mockUserReturn: User = {
     ...rest,
     password: hashedPassword,
     mailConfirmed: false,
-    avatarUrl: null,
+    avatarUrl: 'http://avatar.png',
     createdAt: new Date(),
     updatedAt: new Date(),
     id,
@@ -36,6 +36,9 @@ export const mockUserRepository = {
     update: jest.fn(),
     findMany: jest.fn(),
     count: jest.fn(),
+};
+export const mockCloudinaryService = {
+    getDefaultAvatarUrl: jest.fn(),
 };
 export const mockUserUpdateFields: UpdateUserFields = {
     firstName,

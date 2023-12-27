@@ -19,7 +19,7 @@ const getAllReturn: [User[], PageMetaDto] = [
             firstName: 'Ilya',
             lastName: 'Strelkovskiy',
             email: 'email@gmail.com',
-            avatarUrl: null,
+            avatarUrl: 'http://avatar.png',
             mailConfirmed: true,
             password: '###123###',
             createdAt: new Date(),

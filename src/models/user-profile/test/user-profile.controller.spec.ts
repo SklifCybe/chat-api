@@ -21,13 +21,14 @@ import {
     jwtPayload,
     file,
 } from './mocks/user-profile.controller.mock';
+import { CloudinaryConfigModule } from '../../../config/cloudinary/config.module';
 
 describe('UserProfileController', () => {
     let userProfileController: UserProfileController;
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [CacheManagerModule, RedisProviderModule, ConfigModule.forRoot({ isGlobal: true })],
+            imports: [CacheManagerModule, RedisProviderModule, ConfigModule.forRoot({ isGlobal: true }), CloudinaryConfigModule],
             controllers: [UserProfileController],
             providers: [
                 UserService,

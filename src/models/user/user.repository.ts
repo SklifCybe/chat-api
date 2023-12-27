@@ -50,10 +50,11 @@ export class UserRepository {
         userName: string,
         email: string,
         hashedPassword: string,
+        avatarUrl: string,
     ): Promise<User | null> {
         try {
             return this.prismaService.user.create({
-                data: { firstName, lastName, userName, email, password: hashedPassword },
+                data: { firstName, lastName, userName, email, password: hashedPassword, avatarUrl },
                 include: {
                     contacts: true,
                 },

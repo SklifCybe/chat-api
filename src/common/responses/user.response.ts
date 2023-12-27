@@ -22,7 +22,7 @@ export class UserResponse implements User {
     updatedAt: Date;
 
     @ApiProperty({ example: 'https://res.cloudinary.com/dyfochejl/image/upload/v1699032885/jfhrcsnyttuswho9hhty.png' })
-    avatarUrl: string | null;
+    avatarUrl: string;
 
     @Transform(({ value }: { value: User[] }) => value.map((user: User) => new UserResponse(user)))
     @ApiProperty({

@@ -12,6 +12,7 @@ import {
     hashedPassword,
     salt,
     mockUserRepository,
+    mockCloudinaryService,
     id,
     mockUserUpdateFields,
     mockUpdateFieldsWithPassword,
@@ -23,6 +24,8 @@ import { UserSearchBy } from '../../../common/constants/user-search-by.constant'
 import type { User } from '@prisma/client';
 import type { PageMetaDto } from '../../../common/dtos/page-meta-dto';
 import { BadRequestException } from '@nestjs/common';
+import { CloudinaryModule } from '../../../models/cloudinary/cloudinary.module';
+import { CloudinaryService } from '../../../models/cloudinary/cloudinary.service';
 
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => hashedPassword),
@@ -34,11 +37,12 @@ describe('UserService', () => {
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
-            imports: [CacheManagerModule, RedisProviderModule, ConfigModule.forRoot({ isGlobal: true })],
+            imports: [CacheManagerModule, RedisProviderModule, ConfigModule.forRoot({ isGlobal: true }), CloudinaryModule],
             providers: [
                 UserService,
                 CacheManagerService,
                 AuthenticationConfigService,
+                { provide: CloudinaryService, useValue: mockCloudinaryService },
                 { provide: UserRepository, useValue: mockUserRepository },
             ],
         }).compile();
@@ -57,7 +61,7 @@ describe('UserService', () => {
             };
             const mockUsers: User[] = [
                 {
-                    avatarUrl: null,
+                    avatarUrl: 'http://avatar.png',
                     createdAt: new Date(),
                     email: 'test@gmail.com',
                     firstName: 'Ilya',
@@ -118,7 +122,7 @@ describe('UserService', () => {
             };
             const mockUsers: User[] = [
                 {
-                    avatarUrl: null,
+                    avatarUrl: 'http://avatar.png',
                     createdAt: new Date(),
                     email: 'test@gmail.com',
                     firstName: 'Ilya',
@@ -163,6 +167,7 @@ describe('UserService', () => {
 
     describe('create', () => {
         mockUserRepository.create.mockResolvedValue(mockUserReturn);
+        mockCloudinaryService.getDefaultAvatarUrl.mockResolvedValue(mockUserReturn.avatarUrl);
 
         it('should return user', async () => {
             const user = await userService.create(mockSignUpDto);
@@ -178,9 +183,11 @@ describe('UserService', () => {
             expect(hashPassword).toHaveBeenCalledWith(mockSignUpDto.password);
         });
 
-        it('method create from userRepository should be called with correct arguments', () => {
+        it('method create from userRepository should be called with correct arguments', async () => {
             const { firstName, lastName, userName, email } = mockSignUpDto;
-            const { password: hashedPassword } = mockUserReturn;
+            const { password: hashedPassword, avatarUrl } = mockUserReturn;
+            
+            await userService.create(mockSignUpDto);
 
             expect(mockUserRepository.create).toHaveBeenCalledWith(
                 firstName,
@@ -188,6 +195,7 @@ describe('UserService', () => {
                 userName,
                 email,
                 hashedPassword,
+                avatarUrl
             );
         });
 
