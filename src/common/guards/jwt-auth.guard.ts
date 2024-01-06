@@ -47,6 +47,7 @@ export class JwtAuthGuard extends AuthGuard(JWT) implements CanActivate {
         return true;
     }
 
+    // todo: duplicate
     private extractTokenFromHeader(request: Request): string | undefined {
         const [type, token] = request.headers.authorization?.split(' ') ?? [];
         return type === 'Bearer' ? token : undefined;

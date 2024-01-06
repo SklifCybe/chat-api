@@ -12,6 +12,7 @@ import { CacheManagerModule } from './models/cache-manager/cache-manager.module'
 import { RedisProviderModule } from './providers/redis/provider.module';
 import { AuthenticationProviderModule } from './providers/authentication/provider.module';
 import { AuthenticationConfigModule } from './config/authentication/config.module';
+import { ChatModule } from './models/chat/chat.module';
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { AuthenticationConfigModule } from './config/authentication/config.modul
         ApplicationConfigModule,
         RedisProviderModule,
         CacheManagerModule,
+        ChatModule,
     ],
     controllers: [],
     providers: [IsEmailUniqueValidate, { provide: APP_GUARD, useClass: JwtAuthGuard }],

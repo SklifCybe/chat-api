@@ -35,7 +35,7 @@ export class UserRepository {
                     },
                 },
                 include: {
-                    contacts: true,
+                    chats: true,
                 },
             });
         } catch (error) {
@@ -56,7 +56,7 @@ export class UserRepository {
             return this.prismaService.user.create({
                 data: { firstName, lastName, userName, email, password: hashedPassword, avatarUrl },
                 include: {
-                    contacts: true,
+                    chats: true,
                 },
             });
         } catch (error) {
@@ -76,7 +76,7 @@ export class UserRepository {
             const foundUser = await this.prismaService.user.findFirst({
                 where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] },
                 include: {
-                    contacts: true,
+                    chats: true,
                 },
             });
 
@@ -93,7 +93,7 @@ export class UserRepository {
     public async remove(id: string): Promise<User | null> {
         try {
             // todo: check user.delete throw or not exception
-            const user = await this.prismaService.user.delete({ where: { id }, include: { contacts: true } });
+            const user = await this.prismaService.user.delete({ where: { id }, include: { chats: true } });
 
             await Promise.allSettled([this.cacheManagerService.del(user.id), this.cacheManagerService.del(user.email)]);
 
@@ -109,7 +109,7 @@ export class UserRepository {
             return this.prismaService.user.update({
                 where: { id },
                 data: { mailConfirmed: true },
-                include: { contacts: true },
+                include: { chats: true },
             });
         } catch (error) {
             this.logger.error(error);
@@ -119,7 +119,7 @@ export class UserRepository {
 
     public async update(id: string, updateFields: UpdateUserFields): Promise<User | null> {
         try {
-            return this.prismaService.user.update({ where: { id }, data: updateFields, include: { contacts: true } });
+            return this.prismaService.user.update({ where: { id }, data: updateFields, include: { chats: true } });
         } catch (error) {
             this.logger.error(error);
 

@@ -15,7 +15,7 @@ export const mockUserArguments = {
         avatarUrl: 'http://avatar.png',
     },
     include: {
-        contacts: true
+        chats: true
     }
 };
 export const mockUserCreated: User = {

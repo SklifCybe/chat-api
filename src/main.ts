@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
 import { swaggerSetup } from './swagger/swagger-setup.swagger';
 import { AppModule } from './app.module';
-import { exceptionFactory } from './common/utils/exception-factory';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import { ValidationPipe } from './common/pipes/validation.pipe';
 
 // todo: refactor all application, change return format in async function. from return do.something, to return await do.something. Or return function result like const result = await do.something(); return result;
 // todo: think about change swagger config from json to yml
@@ -15,14 +16,9 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const logger = new Logger();
 
-    app.useGlobalPipes(
-        new ValidationPipe({
-            whitelist: true,
-            forbidNonWhitelisted: true,
-            exceptionFactory,
-        }),
-    );
+    app.useGlobalPipes(new ValidationPipe());
     app.use(cookieParser());
+    app.useWebSocketAdapter(new IoAdapter(app));
 
     swaggerSetup(app);
     useContainer(app.select(AppModule), { fallbackOnErrors: true });

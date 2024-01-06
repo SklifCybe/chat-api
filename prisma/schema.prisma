@@ -8,19 +8,19 @@ datasource db {
 }
 
 model User {
-    id            String   @id @default(uuid())
-    userName      String   @unique @map("user_name")
-    firstName     String   @map("first_name")
-    lastName      String   @map("last_name")
-    email         String   @unique
-    avatarUrl     String   @map("avatar_url")
-    mailConfirmed Boolean  @default(false) @map("mail_confirmed")
+    id            String    @id @default(uuid())
+    userName      String    @unique @map("user_name")
+    firstName     String    @map("first_name")
+    lastName      String    @map("last_name")
+    email         String    @unique
+    avatarUrl     String    @map("avatar_url")
+    mailConfirmed Boolean   @default(false) @map("mail_confirmed")
     password      String
-    createdAt     DateTime @default(now()) @map("created_at")
-    updatedAt     DateTime @updatedAt @map("updated_at")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @updatedAt @map("updated_at")
     token         Token[]
-    contacts      User[]   @relation("Contacts")
-    contactsBy    User[]   @relation("Contacts")
+    chats         Chat[]    @relation("Participant")
+    Message       Message[]
 
     @@map("users")
 }
@@ -34,4 +34,28 @@ model Token {
     userAgent String   @map("user_agent")
 
     @@map("tokens")
+}
+
+model Chat {
+    id           String    @id @default(uuid())
+    title        String
+    type         ChatType
+    participants User[]    @relation("Participant")
+    messages     Message[]
+}
+
+model Message {
+    id        String   @id @default(uuid())
+    content   String
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    sender    User     @relation(fields: [senderId], references: [id])
+    senderId  String
+    chat      Chat     @relation(fields: [chatId], references: [id])
+    chatId    String
+}
+
+enum ChatType {
+    Direct
+    Group
 }

@@ -15,3 +15,5 @@ export const USER_DELETION_ERROR = 'User deletion error';
 export const FAILED_LOAD_AVATAR = 'Failed to load avatar image';
 export const FILE_MAX_SIZE_1_MB = 'File size exceeds 1 MB';
 export const FAILED_CREATE_TOKENS = 'Failed to create tokens';
+export const CHAT_NOT_CREATED = 'Chat was not created';
+export const CHAT_NOT_FOUND = 'Chat not found';

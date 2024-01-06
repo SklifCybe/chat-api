@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { User } from '@prisma/client';
-import { Exclude, Transform } from 'class-transformer';
+import { type User, type Chat, ChatType } from '@prisma/client';
+import { Exclude } from 'class-transformer';
 
 export class UserResponse implements User {
     @ApiProperty({ example: '5779afb5-d3de-4434-9bab-92625270e530' })
@@ -24,21 +24,21 @@ export class UserResponse implements User {
     @ApiProperty({ example: 'https://res.cloudinary.com/dyfochejl/image/upload/v1699032885/jfhrcsnyttuswho9hhty.png' })
     avatarUrl: string;
 
-    @Transform(({ value }: { value: User[] }) => value.map((user: User) => new UserResponse(user)))
     @ApiProperty({
         example: [
             {
-                id: 'uuid-1',
-                avatarUrl: null,
-                email: 'test@gmail.com',
-                firstName: 'Ilya',
-                lastName: 'Strelkovskiy',
-                updatedAt: new Date(),
-                userName: 'sklif',
+                id: 'chat-id-1',
+                title: 'Chat Title',
+                type: ChatType.Direct,
+            },
+            {
+                id: 'chat-id-2',
+                title: 'Chat Title 2',
+                type: ChatType.Group,
             },
         ],
     })
-    contacts: User[];
+    chats: Chat[];
 
     @Exclude()
     mailConfirmed: boolean;
