@@ -53,6 +53,10 @@ export class UserService {
         return this.userRepository.findOne(email);
     }
 
+    public async findOneByUserName(userName: string): Promise<User | null> {
+        return this.userRepository.findOne(userName);
+    }
+
     public async remove(id: string): Promise<User | null> {
         return this.userRepository.remove(id);
     }

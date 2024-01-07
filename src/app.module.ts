@@ -13,6 +13,7 @@ import { RedisProviderModule } from './providers/redis/provider.module';
 import { AuthenticationProviderModule } from './providers/authentication/provider.module';
 import { AuthenticationConfigModule } from './config/authentication/config.module';
 import { ChatModule } from './models/chat/chat.module';
+import { IsUserNameUniqueValidate } from './common/decorators/is-user-name-unique.decorator';
 
 @Module({
     imports: [
@@ -29,6 +30,6 @@ import { ChatModule } from './models/chat/chat.module';
         ChatModule,
     ],
     controllers: [],
-    providers: [IsEmailUniqueValidate, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+    providers: [IsEmailUniqueValidate, { provide: APP_GUARD, useClass: JwtAuthGuard }, IsUserNameUniqueValidate],
 })
 export class AppModule {}

@@ -65,8 +65,8 @@ export class UserRepository {
         }
     }
 
-    public async findOne(idOrEmail: string): Promise<User | null> {
-        const user = await this.cacheManagerService.get<User | undefined | null>(idOrEmail);
+    public async findOne(query: string): Promise<User | null> {
+        const user = await this.cacheManagerService.get<User | undefined | null>(query);
 
         if (user) {
             return user;
@@ -74,13 +74,13 @@ export class UserRepository {
 
         try {
             const foundUser = await this.prismaService.user.findFirst({
-                where: { OR: [{ id: idOrEmail }, { email: idOrEmail }] },
+                where: { OR: [{ id: query }, { email: query }, { userName: query }] },
                 include: {
                     chats: true,
                 },
             });
 
-            await this.cacheManagerService.set(idOrEmail, foundUser);
+            await this.cacheManagerService.set(query, foundUser);
 
             return foundUser;
         } catch (error) {
