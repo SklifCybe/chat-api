@@ -31,7 +31,8 @@ export class JwtAuthGuard extends AuthGuard(JWT) implements CanActivate {
         const accessToken = this.extractTokenFromHeader(request);
 
         if (!accessToken) {
-            throw new UnauthorizedException();
+            // todo-log: remove
+            throw new UnauthorizedException('8');
         }
 
         try {
@@ -41,7 +42,8 @@ export class JwtAuthGuard extends AuthGuard(JWT) implements CanActivate {
 
             request['user'] = payload;
         } catch {
-            throw new UnauthorizedException();
+            // todo-log: remove
+            throw new UnauthorizedException('9');
         }
 
         return true;

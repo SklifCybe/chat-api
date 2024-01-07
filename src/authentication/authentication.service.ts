@@ -183,13 +183,15 @@ export class AuthenticationService {
             const token = await this.tokensService.getRefreshToken({ token: refreshToken });
 
             if (!token) {
-                throw new UnauthorizedException();
+                // todo-log: remove
+                throw new UnauthorizedException('4');
             }
 
             await this.tokensService.removeRefreshToken(refreshToken);
 
             if (new Date(token.expired) < new Date()) {
-                throw new UnauthorizedException();
+                // todo-log: remove
+                throw new UnauthorizedException('5');
             }
 
             const user = await this.userService.findOneById(token.userId);
