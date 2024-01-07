@@ -78,7 +78,7 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
-        return new AccessTokenResponse(tokens.accessToken);
+        return new AccessTokenResponse({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken.token });
     }
 
     @ApiConfirm()
@@ -97,7 +97,7 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
-        return new AccessTokenResponse(tokens.accessToken);
+        return new AccessTokenResponse({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken.token });
     }
 
     @ApiNewCode()
@@ -114,6 +114,7 @@ export class AuthenticationController {
         return new CodeExpiredResponse(confirmTime);
     }
 
+    // todo: add swagger
     @ApiBearerAuth()
     @Public()
     @Post('refresh-tokens')
@@ -136,7 +137,7 @@ export class AuthenticationController {
 
         this.setRefreshTokenToCookies(tokens, response);
 
-        return new AccessTokenResponse(tokens.accessToken);
+        return new AccessTokenResponse({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken.token });
     }
 
     @ApiBearerAuth()
@@ -163,7 +164,6 @@ export class AuthenticationController {
 
         try {
             const maxAge = convertTime('milliseconds', this.authenticationConfigService.refreshTokenExpire);
-
             response.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
                 httpOnly: true,
                 sameSite: 'lax',
