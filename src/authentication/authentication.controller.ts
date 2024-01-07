@@ -124,15 +124,13 @@ export class AuthenticationController {
         @UserAgent() userAgent: string,
     ): Promise<AccessTokenResponse> {
         if (!refreshToken) {
-            // todo-log: remove
-            throw new UnauthorizedException('first');
+            throw new UnauthorizedException();
         }
 
         const tokens = await this.authenticationService.refreshTokens(refreshToken, userAgent);
 
         if (!tokens) {
-            // todo-log: remove
-            throw new UnauthorizedException('second');
+            throw new UnauthorizedException();
         }
 
         this.setRefreshTokenToCookies(tokens, response);
@@ -158,8 +156,7 @@ export class AuthenticationController {
 
     private setRefreshTokenToCookies(tokens: Tokens, response: Response): void {
         if (!tokens.refreshToken) {
-            // todo-log: remove
-            throw new UnauthorizedException('third');
+            throw new UnauthorizedException();
         }
 
         try {

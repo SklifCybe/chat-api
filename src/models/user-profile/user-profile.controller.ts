@@ -59,6 +59,9 @@ export class UserProfileController {
         @Body() updateUserDto: UpdateUserDto,
         @UploadedFile() file?: File,
     ): Promise<UserResponse> {
+        // todo-log: remove
+        console.log(file);
+        console.log('typeof file', typeof file);
         const updatedUser = await this.userProfileService.update(user.id, updateUserDto, file);
 
         if (!updatedUser) {

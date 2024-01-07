@@ -13,8 +13,7 @@ export const User = createParamDecorator((_, context: ExecutionContext): JwtPayl
         const user = request.user;
 
         if (!user) {
-            // todo-log: remove
-            throw new UnauthorizedException('7');
+            throw new UnauthorizedException();
         }
 
         return user as JwtPayload;
