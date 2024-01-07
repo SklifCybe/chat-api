@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, MinLength, Validate, Length } from 'class-validator';
 import { IsEmailUnique } from '../../common/decorators/is-email-unique.decorator';
 import { IsPasswordsMatchingConstrains } from '../../common/decorators/is-passwords-matching-constrains.decorator';
+import { IsUserNameUnique } from '../../common/decorators/is-user-name-unique.decorator';
 
 export class SignUpDto {
     @ApiProperty({ minLength: 2, maxLength: 20, example: 'Ilya' })
@@ -34,6 +35,7 @@ export class SignUpDto {
     public readonly confirmPassword: string;
 
     @ApiProperty({ minLength: 3, maxLength: 15, example: 'sklif' })
+    @IsUserNameUnique()
     @IsString()
     @Length(3, 15)
     public readonly userName: string;

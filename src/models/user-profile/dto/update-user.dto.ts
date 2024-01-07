@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, Length, MinLength, IsOptional } from 'class-validator';
 import { File } from '../../../common/types/file.type';
+import { IsUserNameUnique } from '../../../common/decorators/is-user-name-unique.decorator';
 
 export class UpdateUserDto {
     @ApiPropertyOptional({ minLength: 2, maxLength: 2, example: 'Ilya' })
@@ -26,5 +27,12 @@ export class UpdateUserDto {
     // todo: add validation for file. should create custom decorator something like this
     // https://stackoverflow.com/questions/60680641/is-there-any-way-to-implement-validation-for-file-upload-using-class-validator
     // maybe else
-    public readonly file?: File
+    public readonly file?: File;
+
+    @ApiPropertyOptional({ minLength: 3, maxLength: 15, example: 'sklif' })
+    @IsOptional()
+    @IsUserNameUnique()
+    @IsString()
+    @Length(3, 15)
+    public readonly userName?: string;
 }
