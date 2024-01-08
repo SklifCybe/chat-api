@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { type User, type Chat, ChatType } from '@prisma/client';
-import { Exclude } from 'class-transformer';
+import type { Chat } from '@prisma/client';
+import { type User, ChatType } from '@prisma/client';
+import { Exclude, Transform } from 'class-transformer';
 
 export class UserResponse implements User {
     @ApiProperty({ example: '5779afb5-d3de-4434-9bab-92625270e530' })
@@ -30,14 +31,45 @@ export class UserResponse implements User {
                 id: 'chat-id-1',
                 title: 'Chat Title',
                 type: ChatType.Direct,
+                lastMessage: null,
             },
             {
                 id: 'chat-id-2',
                 title: 'Chat Title 2',
                 type: ChatType.Group,
+                lastMessage: {
+                    id: '2a1171bf-7429-430b-b7c3-cff624becfb0',
+                    content: 'Hello world',
+                    updatedAt: '2024-01-08T16:13:59.575Z',
+                    senderId: '21aa2667-8e70-445a-8b85-54d2f01fd1c5',
+                },
             },
         ],
     })
+    @Transform(({ value }: { value: Chat[] }) =>
+        value.map((chat: any) => {
+            if (!chat.lastMessage) {
+                return {
+                    id: chat.id,
+                    title: chat.title,
+                    type: chat.type,
+                    lastMessage: null,
+                };
+            }
+
+            return {
+                id: chat.id,
+                title: chat.title,
+                type: chat.type,
+                lastMessage: {
+                    id: chat.lastMessage.id,
+                    content: chat.lastMessage.content,
+                    updatedAt: chat.lastMessage.updatedAt,
+                    senderId: chat.lastMessage.senderId,
+                },
+            };
+        }),
+    )
     chats: Chat[];
 
     @Exclude()

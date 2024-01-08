@@ -19,6 +19,7 @@ export class ChatRepository {
                 include: {
                     participants: true,
                     messages: true,
+                    lastMessage: true
                 },
             });
         } catch (error) {
@@ -54,6 +55,7 @@ export class ChatRepository {
                 include: {
                     participants: true,
                     messages: true,
+                    lastMessage: true,
                 },
             });
         } catch (error) {

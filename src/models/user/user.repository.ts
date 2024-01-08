@@ -35,7 +35,12 @@ export class UserRepository {
                     },
                 },
                 include: {
-                    chats: true,
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
                 },
             });
         } catch (error) {
@@ -56,7 +61,12 @@ export class UserRepository {
             return this.prismaService.user.create({
                 data: { firstName, lastName, userName, email, password: hashedPassword, avatarUrl },
                 include: {
-                    chats: true,
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
                 },
             });
         } catch (error) {
@@ -76,7 +86,12 @@ export class UserRepository {
             const foundUser = await this.prismaService.user.findFirst({
                 where: { OR: [{ id: query }, { email: query }, { userName: query }] },
                 include: {
-                    chats: true,
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
                 },
             });
 
@@ -93,7 +108,7 @@ export class UserRepository {
     public async remove(id: string): Promise<User | null> {
         try {
             // todo: check user.delete throw or not exception
-            const user = await this.prismaService.user.delete({ where: { id }, include: { chats: true } });
+            const user = await this.prismaService.user.delete({ where: { id } });
 
             await Promise.allSettled([this.cacheManagerService.del(user.id), this.cacheManagerService.del(user.email)]);
 
@@ -109,7 +124,6 @@ export class UserRepository {
             return this.prismaService.user.update({
                 where: { id },
                 data: { mailConfirmed: true },
-                include: { chats: true },
             });
         } catch (error) {
             this.logger.error(error);
@@ -119,7 +133,18 @@ export class UserRepository {
 
     public async update(id: string, updateFields: UpdateUserFields): Promise<User | null> {
         try {
-            return this.prismaService.user.update({ where: { id }, data: updateFields, include: { chats: true } });
+            return this.prismaService.user.update({
+                where: { id },
+                data: updateFields,
+                include: {
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
+                },
+            });
         } catch (error) {
             this.logger.error(error);
 

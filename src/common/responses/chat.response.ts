@@ -6,13 +6,13 @@ import { UserResponse } from './user.response';
 
 export class ChatResponse implements Chat {
     @ApiProperty({ example: '4076f91a-c64a-4d45-8e49-ee380539c867' })
-    id: string;
+    public readonly id: string;
 
     @ApiProperty({ example: 'Chat Title' })
-    title: string;
+    public readonly title: string;
 
     @ApiProperty({ example: ChatType.Direct })
-    type: ChatType;
+    public readonly type: ChatType;
 
     @ApiProperty({
         example: [
@@ -39,7 +39,7 @@ export class ChatResponse implements Chat {
         ],
     })
     @Transform(({ value }: { value: User[] }) => value.map((user: User) => new UserResponse(user)))
-    participants: UserResponse[];
+    public readonly participants: UserResponse[];
 
     @ApiProperty({
         example: [
@@ -61,7 +61,33 @@ export class ChatResponse implements Chat {
             },
         ],
     })
-    messages: Message[];
+    @Transform(({ value }: { value: Message[] }) =>
+        value.map((message: Message) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { lastMessageInChatId, ...serializeMessage } = message;
+
+            return serializeMessage;
+        }),
+    )
+    public readonly messages: Message[];
+
+    @ApiProperty({
+        example: {
+            id: 'b348a40a-c08d-4aa4-b24a-41db70e8ab60',
+            content: 'Hello',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            senderId: '7cd60ab7-1413-4116-91f7-5579beccdc02',
+            chatId: '4d3bf758-f853-423a-a21e-e6eae35525cd',
+        },
+    })
+    @Transform(({ value }: { value: Message }) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { lastMessageInChatId, ...serializeMessage } = value;
+
+        return serializeMessage;
+    })
+    public readonly lastMessage: Message | null;
 
     constructor(chat: Chat) {
         Object.assign(this, chat);

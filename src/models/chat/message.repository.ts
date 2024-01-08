@@ -24,7 +24,7 @@ export class MessageRepository {
                 return null;
             }
 
-            return await this.prismaService.message.create({
+            const newMessage = await this.prismaService.message.create({
                 data: {
                     content,
                     sender: {
@@ -33,8 +33,18 @@ export class MessageRepository {
                     chat: {
                         connect: { id: chatId },
                     },
+                    lastMessageInChat: {
+                        connect: { id: chatId }
+                    }
                 },
             });
+
+            await this.prismaService.chat.update({
+                where: { id: chatId },
+                data: { lastMessage: { connect: { id: newMessage.id } } },
+            });
+
+            return newMessage;
         } catch (error) {
             this.logger.error(error);
 

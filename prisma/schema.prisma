@@ -41,18 +41,25 @@ model Chat {
     title        String
     type         ChatType
     participants User[]    @relation("Participant")
-    messages     Message[]
+    messages     Message[] @relation("Messages")
+    lastMessage  Message?  @relation("LastMessage")
+
+    @@map("chats")
 }
 
 model Message {
-    id        String   @id @default(uuid())
-    content   String
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-    sender    User     @relation(fields: [senderId], references: [id])
-    senderId  String
-    chat      Chat     @relation(fields: [chatId], references: [id])
-    chatId    String
+    id                  String   @id @default(uuid())
+    content             String
+    createdAt           DateTime @default(now()) @map("created_at")
+    updatedAt           DateTime @updatedAt @map("updated_at")
+    sender              User     @relation(fields: [senderId], references: [id])
+    senderId            String
+    chat                Chat     @relation("Messages", fields: [chatId], references: [id])
+    chatId              String
+    lastMessageInChat   Chat?    @relation("LastMessage", fields: [lastMessageInChatId], references: [id])
+    lastMessageInChatId String?  @unique
+
+    @@map("messages")
 }
 
 enum ChatType {
