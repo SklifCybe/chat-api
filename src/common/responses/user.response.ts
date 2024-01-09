@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import type { Chat } from '@prisma/client';
 import { type User, ChatType } from '@prisma/client';
 import { Exclude, Transform } from 'class-transformer';
+import { UserListResponse } from './user-list.response';
 
 export class UserResponse implements User {
     @ApiProperty({ example: '5779afb5-d3de-4434-9bab-92625270e530' })
@@ -48,11 +49,14 @@ export class UserResponse implements User {
     })
     @Transform(({ value }: { value: Chat[] }) =>
         value.map((chat: any) => {
+            const participants = new UserListResponse(chat.participants);
+            
             if (!chat.lastMessage) {
                 return {
                     id: chat.id,
                     title: chat.title,
                     type: chat.type,
+                    participants,
                     lastMessage: null,
                 };
             }
@@ -61,6 +65,7 @@ export class UserResponse implements User {
                 id: chat.id,
                 title: chat.title,
                 type: chat.type,
+                participants,
                 lastMessage: {
                     id: chat.lastMessage.id,
                     content: chat.lastMessage.content,
