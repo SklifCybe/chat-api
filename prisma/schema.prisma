@@ -54,7 +54,7 @@ model Message {
     updatedAt           DateTime @updatedAt @map("updated_at")
     sender              User     @relation(fields: [senderId], references: [id])
     senderId            String
-    chat                Chat     @relation("Messages", fields: [chatId], references: [id])
+    chat                Chat     @relation("Messages", fields: [chatId], references: [id], onDelete: Cascade)
     chatId              String
     lastMessageInChat   Chat?    @relation("LastMessage", fields: [lastMessageInChatId], references: [id])
     lastMessageInChatId String?  @unique
