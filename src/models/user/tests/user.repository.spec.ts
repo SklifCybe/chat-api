@@ -102,8 +102,13 @@ describe('UserRepository', () => {
                     },
                 },
                 include: {
-                    chats: true,
-                }
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
+                },
             };
 
             mockPrismaService.user.findMany.mockResolvedValueOnce(mockUsers);
@@ -150,9 +155,21 @@ describe('UserRepository', () => {
         it('should call create function with correct arguments', async () => {
             const { email, firstName, lastName, password, userName, avatarUrl } = mockUserArguments.data;
 
+            const received = {
+                data: mockUserArguments.data,
+                include: {
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
+                },
+            }
+
             await userRepository.create(firstName, lastName, userName, email, password, avatarUrl);
 
-            expect(mockPrismaService.user.create).toHaveBeenCalledWith(mockUserArguments);
+            expect(mockPrismaService.user.create).toHaveBeenCalledWith(received);
         });
     });
 
@@ -181,12 +198,18 @@ describe('UserRepository', () => {
 
         it('should call findFirst method with correct arguments', async () => {
             mockCacheManagerService.get.mockImplementation(() => null);
-
+            
+            const query = mockUserCreated.id;
             const received = {
-                where: {
-                    OR: [{ id: mockUserCreated.id }, { email: mockUserCreated.id }],
+                where: { OR: [{ id: query }, { email: query }, { userName: query }] },
+                include: {
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
                 },
-                include: { chats: true },
             };
 
             await userRepository.findOne(mockUserCreated.id);
@@ -220,7 +243,7 @@ describe('UserRepository', () => {
         it('should call delete method with correct arguments', async () => {
             await userRepository.remove(mockUserCreated.id);
 
-            const received = { where: { id: mockUserCreated.id }, include: { chats: true } };
+            const received = { where: { id: mockUserCreated.id } };
 
             expect(mockPrismaService.user.delete).toHaveBeenCalledWith(received);
         });
@@ -273,7 +296,6 @@ describe('UserRepository', () => {
             const received = {
                 where: { id: mockUserCreated.id },
                 data: { mailConfirmed: true },
-                include: { chats: true },
             };
 
             expect(mockPrismaService.user.update).toHaveBeenCalledWith(received);
@@ -304,7 +326,18 @@ describe('UserRepository', () => {
         it('should call update method with correct arguments', async () => {
             await userRepository.update(userId, updateFields);
 
-            const received = { where: { id: userId }, data: updateFields, include: { chats: true } };
+            const received = {
+                where: { id: userId },
+                data: updateFields,
+                include: {
+                    chats: {
+                        include: {
+                            lastMessage: true,
+                            participants: true,
+                        },
+                    },
+                },
+            };
 
             expect(mockPrismaService.user.update).toHaveBeenCalledWith(received);
         });

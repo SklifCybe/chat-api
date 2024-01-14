@@ -14,9 +14,6 @@ export const mockUserArguments = {
         password: '123456',
         avatarUrl: 'http://avatar.png',
     },
-    include: {
-        chats: true
-    }
 };
 export const mockUserCreated: User = {
     ...mockUserArguments.data,
