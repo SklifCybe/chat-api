@@ -82,6 +82,10 @@ export class ChatResponse implements Chat {
         },
     })
     @Transform(({ value }: { value: Message }) => {
+        if (value === null) {
+            return null;
+        }
+
         return {
             id: value.id,
             content: value.content,
