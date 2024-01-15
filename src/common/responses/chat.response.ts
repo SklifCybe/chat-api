@@ -82,10 +82,14 @@ export class ChatResponse implements Chat {
         },
     })
     @Transform(({ value }: { value: Message }) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { lastMessageInChatId, ...serializeMessage } = value;
-
-        return serializeMessage;
+        return {
+            id: value.id,
+            content: value.content,
+            createdAt: value.createdAt,
+            updatedAt: value.updatedAt,
+            senderId: value.senderId,
+            chatId: value.chatId,
+        };
     })
     public readonly lastMessage: Message | null;
 
